@@ -1,0 +1,41 @@
+#+TITLE: Salas 2020 dataset
+
+Here we re-examine the individual exon-level mappings
+
+
+* Plots
+
+  #+begin_src R
+    library(ggplot2)
+    library(gridExtra)
+    tab <- read.table('./results.csv', header=T, sep = ',', row.names = 1)
+
+    # First four characters === condition
+    tab$condition <- substr(tab$matrix, start=1, stop=4)
+
+    ## sort(unique(sort(tab$exon)))
+    ## - a custom sort function is silly, let's just list the desired order
+    xlabels = c('Dot1l-201_4', 'Dot1l-201_27', 'Dot1l-201_28', 'Dot1l-203_2', 'Dot1l-204_3', 'Dot1l-205_5')
+
+    margins = margin(1, 0, 1, 0, "cm")
+
+    p1 <- ggplot(tab, aes(exon, ntrans, colour = condition)) + scale_x_discrete(limits=xlabels) + xlab("TranscriptID_ExonNumber") + ylab("Total Reads") + geom_boxplot() + ggtitle("Reads Mapped to Exon") + theme(plot.margin = margins)
+
+    p2 <- ggplot(tab, aes(exon, ncells, colour = condition)) + scale_x_discrete(limits=xlabels) + xlab("TranscriptID_ExonNumber") + ylab("Total Cells") + geom_boxplot() + ggtitle("Cells in which Exon was detected") + theme(plot.margin = margins)
+
+    p3 <- ggplot(tab, aes(exon, ntrans, colour = condition, size = ncells)) + scale_x_discrete(limits=xlabels) + xlab("TranscriptID_ExonNumber") + ylab("Total Reads") + geom_jitter(width=0.2) + ggtitle("Reads Mapped to each Exon, sized by number of cells") + theme(plot.margin = margins) + scale_size_continuous(range = c(1, 3))
+
+    ## Let's ignore exon28, and just look at the remainder
+    ## Unfortunately, most other exons simply express 1 transcript in 1 cell
+    not28=tab[tab$exon != "Dot1l-201_28",]
+
+    xlabels28 = c('Dot1l-201_4', 'Dot1l-201_27', 'Dot1l-203_2', 'Dot1l-204_3', 'Dot1l-205_5')
+
+    p4 <- ggplot(not28, aes(exon, ntrans, colour = condition, size=factor(ncells))) + scale_x_discrete(limits=xlabels28) + xlab("TranscriptID_ExonNumber") + ylab("Total Reads") + geom_point() + ggtitle("Unique number of Cells for each Exon (not including exon Dot1l-201_28)") + ylim(0,3) + theme(plot.margin = margins)
+
+
+    svg("salas_summary.svg", width=7, height=14)
+    grid.arrange(p1,p2,p3,p4, ncol=1)
+    dev.off()
+
+  #+end_src
