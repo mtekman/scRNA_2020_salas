@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2020-07-23 Thu 23:56 -->
+<!-- 2020-07-23 Thu 23:57 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Salas 2020 Dot1L Plots</title>
@@ -247,12 +247,12 @@ for the JavaScript code in this tag.
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#orgcd9fdd3">Get Data</a></li>
-<li><a href="#org0deb58a">Plot1: The total cells that mapped to each transcript (transcript-level)</a></li>
-<li><a href="#orgd5ee1f9">Plot2: The weird plots we had before (distribution of cell mappings, useless image)</a></li>
-<li><a href="#orgfeb65e7">Plot3: Same as Plot2 but plot cell totals as dots (also useless image, but explains Plot2)</a></li>
-<li><a href="#org7d63a90">Plot4: The total cells that mapped to each transcript (transcript<sub>exon</sub>-level)</a></li>
-<li><a href="#org7fa09a6">Plot 5: The total cells that mapped to each Dot1l-201 (Canonical Transcript) exon</a></li>
+<li><a href="#org0c74003">Get Data</a></li>
+<li><a href="#org3919993">Plot1: The total cells that mapped to each transcript (transcript-level)</a></li>
+<li><a href="#org208191f">Plot2: The weird plots we had before (distribution of cell mappings, useless image)</a></li>
+<li><a href="#org95c4338">Plot3: Same as Plot2 but plot cell totals as dots (also useless image, but explains Plot2)</a></li>
+<li><a href="#org263c91a">Plot4: The total cells that mapped to each transcript (transcript<sub>exon</sub>-level)</a></li>
+<li><a href="#org16bcff9">Plot5: The total cells that mapped to each Dot1l-201 (Canonical Transcript) exon</a></li>
 </ul>
 </div>
 </div>
@@ -260,9 +260,9 @@ for the JavaScript code in this tag.
 Here we re-examine the individual exon-level mappings
 </p>
 
-<div id="outline-container-orgcd9fdd3" class="outline-2">
-<h2 id="orgcd9fdd3">Get Data</h2>
-<div class="outline-text-2" id="text-orgcd9fdd3">
+<div id="outline-container-org0c74003" class="outline-2">
+<h2 id="org0c74003">Get Data</h2>
+<div class="outline-text-2" id="text-org0c74003">
 <p>
 Here we read in the <code>results.csv</code> file which contains the exon-level quantification matrices filtered to only given Dot1L transcripts.
 </p>
@@ -876,9 +876,9 @@ tab &lt;- tabdata
 </div>
 </div>
 
-<div id="outline-container-org0deb58a" class="outline-2">
-<h2 id="org0deb58a">Plot1: The total cells that mapped to each transcript (transcript-level)</h2>
-<div class="outline-text-2" id="text-org0deb58a">
+<div id="outline-container-org3919993" class="outline-2">
+<h2 id="org3919993">Plot1: The total cells that mapped to each transcript (transcript-level)</h2>
+<div class="outline-text-2" id="text-org3919993">
 <div class="org-src-container">
 <pre class="src src-R">## First Plot shows how many cells for each condition, grouped by transcript
 t1.cells &lt;- tab %&gt;% group_by(transcript, condition) %&gt;% summarise(totalcells=sum(ncells))
@@ -984,9 +984,9 @@ Most of our cells map to the Dot1l-201 transcript. A few stray cells map to the 
 </div>
 
 
-<div id="outline-container-orgd5ee1f9" class="outline-2">
-<h2 id="orgd5ee1f9">Plot2: The weird plots we had before (distribution of cell mappings, useless image)</h2>
-<div class="outline-text-2" id="text-orgd5ee1f9">
+<div id="outline-container-org208191f" class="outline-2">
+<h2 id="org208191f">Plot2: The weird plots we had before (distribution of cell mappings, useless image)</h2>
+<div class="outline-text-2" id="text-org208191f">
 <div class="org-src-container">
 <pre class="src src-R">p1 &lt;- ggplot(tab, aes(transcript, ntrans, colour = condition)) +
   xlab("Transcript Name") + ylab("Read Distribution") +
@@ -1013,9 +1013,9 @@ These were the two unclear plots we had before which seemed to suggest only 20-3
 </div>
 </div>
 
-<div id="outline-container-orgfeb65e7" class="outline-2">
-<h2 id="orgfeb65e7">Plot3: Same as Plot2 but plot cell totals as dots (also useless image, but explains Plot2)</h2>
-<div class="outline-text-2" id="text-orgfeb65e7">
+<div id="outline-container-org95c4338" class="outline-2">
+<h2 id="org95c4338">Plot3: Same as Plot2 but plot cell totals as dots (also useless image, but explains Plot2)</h2>
+<div class="outline-text-2" id="text-org95c4338">
 <p>
 Let's redo the above two plots, but this time plot actual cells and not the misleading distribution.
 </p>
@@ -1709,9 +1709,9 @@ Yes, this is a confusing plot and should be ignored, but it offers an explanatio
 </div>
 </div>
 
-<div id="outline-container-org7d63a90" class="outline-2">
-<h2 id="org7d63a90">Plot4: The total cells that mapped to each transcript (transcript<sub>exon</sub>-level)</h2>
-<div class="outline-text-2" id="text-org7d63a90">
+<div id="outline-container-org263c91a" class="outline-2">
+<h2 id="org263c91a">Plot4: The total cells that mapped to each transcript (transcript<sub>exon</sub>-level)</h2>
+<div class="outline-text-2" id="text-org263c91a">
 <p>
 A <b>better</b> way of representing the above graphic is if we merge all matrices so that we only see the condition.
 </p>
@@ -1853,9 +1853,9 @@ Here Dot1l-201 appears to be the most represented transcript just from Exon28 al
 </div>
 </div>
 
-<div id="outline-container-org7fa09a6" class="outline-2">
-<h2 id="org7fa09a6">Plot 5: The total cells that mapped to each Dot1l-201 (Canonical Transcript) exon</h2>
-<div class="outline-text-2" id="text-org7fa09a6">
+<div id="outline-container-org16bcff9" class="outline-2">
+<h2 id="org16bcff9">Plot5: The total cells that mapped to each Dot1l-201 (Canonical Transcript) exon</h2>
+<div class="outline-text-2" id="text-org16bcff9">
 <p>
 If we look at our first plot we see that Dot1l-201 is the most populated transcript (most likely because it is the canonical transcript). Let's see how many cells map to which specific exon's of that transcript.
 </p>
@@ -1956,7 +1956,7 @@ tmp3
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Mehmet Tekman</p>
-<p class="date">Created: 2020-07-23 Thu 23:56</p>
+<p class="date">Created: 2020-07-23 Thu 23:57</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>
