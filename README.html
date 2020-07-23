@@ -1,0 +1,1963 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2020-07-23 Thu 23:56 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Salas 2020 Dot1L Plots</title>
+<meta name="generator" content="Org mode" />
+<meta name="author" content="Mehmet Tekman" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: visible;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { width: 90%; }
+  /*]]>*/-->
+</style>
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2020 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+</head>
+<body>
+<div id="content">
+<h1 class="title">Salas 2020 Dot1L Plots</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#orgcd9fdd3">Get Data</a></li>
+<li><a href="#org0deb58a">Plot1: The total cells that mapped to each transcript (transcript-level)</a></li>
+<li><a href="#orgd5ee1f9">Plot2: The weird plots we had before (distribution of cell mappings, useless image)</a></li>
+<li><a href="#orgfeb65e7">Plot3: Same as Plot2 but plot cell totals as dots (also useless image, but explains Plot2)</a></li>
+<li><a href="#org7d63a90">Plot4: The total cells that mapped to each transcript (transcript<sub>exon</sub>-level)</a></li>
+<li><a href="#org7fa09a6">Plot 5: The total cells that mapped to each Dot1l-201 (Canonical Transcript) exon</a></li>
+</ul>
+</div>
+</div>
+<p>
+Here we re-examine the individual exon-level mappings
+</p>
+
+<div id="outline-container-orgcd9fdd3" class="outline-2">
+<h2 id="orgcd9fdd3">Get Data</h2>
+<div class="outline-text-2" id="text-orgcd9fdd3">
+<p>
+Here we read in the <code>results.csv</code> file which contains the exon-level quantification matrices filtered to only given Dot1L transcripts.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-R">library(ggplot2)
+library(gridExtra)
+library(dplyr)
+tab &lt;- read.table('./results.csv', header=T, sep = ',', row.names = 1)
+
+## First four characters === condition
+tab$condition &lt;- as.factor(substr(tab$matrix, start=1, stop=4))
+tab$transcript &lt;- as.factor(sapply(strsplit(tab$exon, split="_"), function(x){x[[1]]}))
+tab$exonNum &lt;- as.factor(sapply(strsplit(tab$exon, split="_"), function(x){as.integer(x[[2]])}))
+
+tabdata &lt;- data.frame(matrix=tab$matrix, condition=tab$condition,
+                      #gene=tab$gene, 
+                      transcript=tab$transcript, exon_num=tab$exonNum, 
+                      ncells=tab$ncells, ntrans=tab$ntrans)
+
+tab &lt;- tabdata
+</pre>
+</div>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">matrix</th>
+<th scope="col" class="org-left">condition</th>
+<th scope="col" class="org-left">transcript</th>
+<th scope="col" class="org-right">exon<sub>num</sub></th>
+<th scope="col" class="org-right">ncells</th>
+<th scope="col" class="org-right">ntrans</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">C81732</td>
+<td class="org-left">C817</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">32</td>
+<td class="org-right">45</td>
+</tr>
+
+<tr>
+<td class="org-left">C81733</td>
+<td class="org-left">C817</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">29</td>
+<td class="org-right">35</td>
+</tr>
+
+<tr>
+<td class="org-left">C81733</td>
+<td class="org-left">C817</td>
+<td class="org-left">Dot1l-203</td>
+<td class="org-right">2</td>
+<td class="org-right">1</td>
+<td class="org-right">1</td>
+</tr>
+
+<tr>
+<td class="org-left">C81734</td>
+<td class="org-left">C817</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">18</td>
+<td class="org-right">25</td>
+</tr>
+
+<tr>
+<td class="org-left">K81312</td>
+<td class="org-left">K813</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">37</td>
+<td class="org-right">55</td>
+</tr>
+
+<tr>
+<td class="org-left">K81313</td>
+<td class="org-left">K813</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">39</td>
+<td class="org-right">52</td>
+</tr>
+
+<tr>
+<td class="org-left">K81313</td>
+<td class="org-left">K813</td>
+<td class="org-left">Dot1l-205</td>
+<td class="org-right">5</td>
+<td class="org-right">1</td>
+<td class="org-right">1</td>
+</tr>
+
+<tr>
+<td class="org-left">K81314</td>
+<td class="org-left">K813</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">25</td>
+<td class="org-right">34</td>
+</tr>
+
+<tr>
+<td class="org-left">K81321</td>
+<td class="org-left">K813</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">29</td>
+<td class="org-right">31</td>
+</tr>
+
+<tr>
+<td class="org-left">C81723</td>
+<td class="org-left">C817</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">21</td>
+<td class="org-right">24</td>
+</tr>
+
+<tr>
+<td class="org-left">K81322</td>
+<td class="org-left">K813</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">38</td>
+<td class="org-right">59</td>
+</tr>
+
+<tr>
+<td class="org-left">K81322</td>
+<td class="org-left">K813</td>
+<td class="org-left">Dot1l-203</td>
+<td class="org-right">2</td>
+<td class="org-right">1</td>
+<td class="org-right">1</td>
+</tr>
+
+<tr>
+<td class="org-left">K81323</td>
+<td class="org-left">K813</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">30</td>
+<td class="org-right">35</td>
+</tr>
+
+<tr>
+<td class="org-left">K81324</td>
+<td class="org-left">K813</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">21</td>
+<td class="org-right">26</td>
+</tr>
+
+<tr>
+<td class="org-left">K81431</td>
+<td class="org-left">K814</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">37</td>
+<td class="org-right">41</td>
+</tr>
+
+<tr>
+<td class="org-left">K81432</td>
+<td class="org-left">K814</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">38</td>
+<td class="org-right">43</td>
+</tr>
+
+<tr>
+<td class="org-left">K81433</td>
+<td class="org-left">K814</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">42</td>
+<td class="org-right">50</td>
+</tr>
+
+<tr>
+<td class="org-left">K81434</td>
+<td class="org-left">K814</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">26</td>
+<td class="org-right">36</td>
+</tr>
+
+<tr>
+<td class="org-left">C81724</td>
+<td class="org-left">C817</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">24</td>
+<td class="org-right">33</td>
+</tr>
+
+<tr>
+<td class="org-left">C81741</td>
+<td class="org-left">C817</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">38</td>
+<td class="org-right">49</td>
+</tr>
+
+<tr>
+<td class="org-left">C81742</td>
+<td class="org-left">C817</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">30</td>
+<td class="org-right">35</td>
+</tr>
+
+<tr>
+<td class="org-left">C81743</td>
+<td class="org-left">C817</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">28</td>
+<td class="org-right">33</td>
+</tr>
+
+<tr>
+<td class="org-left">K81331</td>
+<td class="org-left">K813</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">31</td>
+<td class="org-right">41</td>
+</tr>
+
+<tr>
+<td class="org-left">K81332</td>
+<td class="org-left">K813</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">21</td>
+<td class="org-right">22</td>
+</tr>
+
+<tr>
+<td class="org-left">K81333</td>
+<td class="org-left">K813</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">15</td>
+<td class="org-right">19</td>
+</tr>
+
+<tr>
+<td class="org-left">K81333</td>
+<td class="org-left">K813</td>
+<td class="org-left">Dot1l-203</td>
+<td class="org-right">2</td>
+<td class="org-right">1</td>
+<td class="org-right">1</td>
+</tr>
+
+<tr>
+<td class="org-left">K81334</td>
+<td class="org-left">K813</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">28</td>
+<td class="org-right">33</td>
+</tr>
+
+<tr>
+<td class="org-left">K81334</td>
+<td class="org-left">K813</td>
+<td class="org-left">Dot1l-203</td>
+<td class="org-right">2</td>
+<td class="org-right">1</td>
+<td class="org-right">1</td>
+</tr>
+
+<tr>
+<td class="org-left">K81421</td>
+<td class="org-left">K814</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">18</td>
+<td class="org-right">26</td>
+</tr>
+
+<tr>
+<td class="org-left">K81422</td>
+<td class="org-left">K814</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">21</td>
+<td class="org-right">25</td>
+</tr>
+
+<tr>
+<td class="org-left">K81423</td>
+<td class="org-left">K814</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">28</td>
+<td class="org-right">31</td>
+</tr>
+
+<tr>
+<td class="org-left">K81424</td>
+<td class="org-left">K814</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">34</td>
+<td class="org-right">43</td>
+</tr>
+
+<tr>
+<td class="org-left">C81744</td>
+<td class="org-left">C817</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">27</td>
+<td class="org-right">1</td>
+<td class="org-right">2</td>
+</tr>
+
+<tr>
+<td class="org-left">C81744</td>
+<td class="org-left">C817</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">31</td>
+<td class="org-right">50</td>
+</tr>
+
+<tr>
+<td class="org-left">C81744</td>
+<td class="org-left">C817</td>
+<td class="org-left">Dot1l-204</td>
+<td class="org-right">3</td>
+<td class="org-right">1</td>
+<td class="org-right">1</td>
+</tr>
+
+<tr>
+<td class="org-left">C81711</td>
+<td class="org-left">C817</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">23</td>
+<td class="org-right">27</td>
+</tr>
+
+<tr>
+<td class="org-left">C81712</td>
+<td class="org-left">C817</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">29</td>
+<td class="org-right">39</td>
+</tr>
+
+<tr>
+<td class="org-left">C81712</td>
+<td class="org-left">C817</td>
+<td class="org-left">Dot1l-203</td>
+<td class="org-right">2</td>
+<td class="org-right">1</td>
+<td class="org-right">1</td>
+</tr>
+
+<tr>
+<td class="org-left">C81712</td>
+<td class="org-left">C817</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">4</td>
+<td class="org-right">1</td>
+<td class="org-right">1</td>
+</tr>
+
+<tr>
+<td class="org-left">C81713</td>
+<td class="org-left">C817</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">23</td>
+<td class="org-right">28</td>
+</tr>
+
+<tr>
+<td class="org-left">C81713</td>
+<td class="org-left">C817</td>
+<td class="org-left">Dot1l-203</td>
+<td class="org-right">2</td>
+<td class="org-right">1</td>
+<td class="org-right">1</td>
+</tr>
+
+<tr>
+<td class="org-left">C81721</td>
+<td class="org-left">C817</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">26</td>
+<td class="org-right">33</td>
+</tr>
+
+<tr>
+<td class="org-left">C81714</td>
+<td class="org-left">C817</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">21</td>
+<td class="org-right">29</td>
+</tr>
+
+<tr>
+<td class="org-left">K81342</td>
+<td class="org-left">K813</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">28</td>
+<td class="org-right">35</td>
+</tr>
+
+<tr>
+<td class="org-left">K81343</td>
+<td class="org-left">K813</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">27</td>
+<td class="org-right">1</td>
+<td class="org-right">1</td>
+</tr>
+
+<tr>
+<td class="org-left">K81343</td>
+<td class="org-left">K813</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">33</td>
+<td class="org-right">42</td>
+</tr>
+
+<tr>
+<td class="org-left">K81411</td>
+<td class="org-left">K814</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">28</td>
+<td class="org-right">34</td>
+</tr>
+
+<tr>
+<td class="org-left">K81411</td>
+<td class="org-left">K814</td>
+<td class="org-left">Dot1l-204</td>
+<td class="org-right">3</td>
+<td class="org-right">1</td>
+<td class="org-right">1</td>
+</tr>
+
+<tr>
+<td class="org-left">K81412</td>
+<td class="org-left">K814</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">30</td>
+<td class="org-right">40</td>
+</tr>
+
+<tr>
+<td class="org-left">K81413</td>
+<td class="org-left">K814</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">33</td>
+<td class="org-right">45</td>
+</tr>
+
+<tr>
+<td class="org-left">K81414</td>
+<td class="org-left">K814</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">11</td>
+<td class="org-right">16</td>
+</tr>
+
+<tr>
+<td class="org-left">K81441</td>
+<td class="org-left">K814</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">27</td>
+<td class="org-right">2</td>
+<td class="org-right">2</td>
+</tr>
+
+<tr>
+<td class="org-left">K81441</td>
+<td class="org-left">K814</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">35</td>
+<td class="org-right">50</td>
+</tr>
+
+<tr>
+<td class="org-left">K81442</td>
+<td class="org-left">K814</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">25</td>
+<td class="org-right">32</td>
+</tr>
+
+<tr>
+<td class="org-left">K81442</td>
+<td class="org-left">K814</td>
+<td class="org-left">Dot1l-204</td>
+<td class="org-right">3</td>
+<td class="org-right">1</td>
+<td class="org-right">1</td>
+</tr>
+
+<tr>
+<td class="org-left">C81722</td>
+<td class="org-left">C817</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">23</td>
+<td class="org-right">32</td>
+</tr>
+
+<tr>
+<td class="org-left">K81443</td>
+<td class="org-left">K814</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">27</td>
+<td class="org-right">1</td>
+<td class="org-right">1</td>
+</tr>
+
+<tr>
+<td class="org-left">K81443</td>
+<td class="org-left">K814</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">30</td>
+<td class="org-right">42</td>
+</tr>
+
+<tr>
+<td class="org-left">K81443</td>
+<td class="org-left">K814</td>
+<td class="org-left">Dot1l-203</td>
+<td class="org-right">2</td>
+<td class="org-right">1</td>
+<td class="org-right">1</td>
+</tr>
+
+<tr>
+<td class="org-left">K81444</td>
+<td class="org-left">K814</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">27</td>
+<td class="org-right">1</td>
+<td class="org-right">1</td>
+</tr>
+
+<tr>
+<td class="org-left">K81444</td>
+<td class="org-left">K814</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">34</td>
+<td class="org-right">45</td>
+</tr>
+
+<tr>
+<td class="org-left">C81731</td>
+<td class="org-left">C817</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">30</td>
+<td class="org-right">38</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<div id="outline-container-org0deb58a" class="outline-2">
+<h2 id="org0deb58a">Plot1: The total cells that mapped to each transcript (transcript-level)</h2>
+<div class="outline-text-2" id="text-org0deb58a">
+<div class="org-src-container">
+<pre class="src src-R">## First Plot shows how many cells for each condition, grouped by transcript
+t1.cells &lt;- tab %&gt;% group_by(transcript, condition) %&gt;% summarise(totalcells=sum(ncells))
+t1.cells
+</pre>
+</div>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">transcript</th>
+<th scope="col" class="org-left">condition</th>
+<th scope="col" class="org-right">totalcells</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">Dot1l-201</td>
+<td class="org-left">C817</td>
+<td class="org-right">428</td>
+</tr>
+
+<tr>
+<td class="org-left">Dot1l-201</td>
+<td class="org-left">K813</td>
+<td class="org-right">376</td>
+</tr>
+
+<tr>
+<td class="org-left">Dot1l-201</td>
+<td class="org-left">K814</td>
+<td class="org-right">474</td>
+</tr>
+
+<tr>
+<td class="org-left">Dot1l-203</td>
+<td class="org-left">C817</td>
+<td class="org-right">3</td>
+</tr>
+
+<tr>
+<td class="org-left">Dot1l-203</td>
+<td class="org-left">K813</td>
+<td class="org-right">3</td>
+</tr>
+
+<tr>
+<td class="org-left">Dot1l-203</td>
+<td class="org-left">K814</td>
+<td class="org-right">1</td>
+</tr>
+
+<tr>
+<td class="org-left">Dot1l-204</td>
+<td class="org-left">C817</td>
+<td class="org-right">1</td>
+</tr>
+
+<tr>
+<td class="org-left">Dot1l-204</td>
+<td class="org-left">K814</td>
+<td class="org-right">2</td>
+</tr>
+
+<tr>
+<td class="org-left">Dot1l-205</td>
+<td class="org-left">K813</td>
+<td class="org-right">1</td>
+</tr>
+</tbody>
+</table>
+
+<div class="org-src-container">
+<pre class="src src-R">t1.cells %&gt;% ggplot(aes(x=transcript, y=totalcells, fill=condition)) +
+  geom_bar(position='dodge2',stat='identity') +
+  xlab("Transcript Name") +
+  ggtitle("Number of Cells Mapped to Transcript") +
+  scale_y_continuous(name="Number of Cells", breaks=seq(0,500,50))
+
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="imgs/cells.trans.png" alt="cells.trans.png" />
+</p>
+</div>
+
+
+<p>
+Most of our cells map to the Dot1l-201 transcript. A few stray cells map to the others (see the table above).
+</p>
+</div>
+</div>
+
+
+<div id="outline-container-orgd5ee1f9" class="outline-2">
+<h2 id="orgd5ee1f9">Plot2: The weird plots we had before (distribution of cell mappings, useless image)</h2>
+<div class="outline-text-2" id="text-orgd5ee1f9">
+<div class="org-src-container">
+<pre class="src src-R">p1 &lt;- ggplot(tab, aes(transcript, ntrans, colour = condition)) +
+  xlab("Transcript Name") + ylab("Read Distribution") +
+  geom_boxplot() + ggtitle("Reads Mapped to Exon")
+
+p2 &lt;- ggplot(tab, aes(transcript, ncells, colour = condition)) +
+  xlab("Transcript Name") + ylab("Cell Distribution ") +
+  geom_boxplot() + ggtitle("Cells Mapped to Exon")
+
+grid.arrange(p1,p2, ncol=1)
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="imgs/cells_reads.distrib.png" alt="cells_reads.distrib.png" />
+</p>
+</div>
+
+
+<p>
+These were the two unclear plots we had before which seemed to suggest only 20-30 or so cells per Dot1L transcript, or 30-40 reads mapped per Dot1L transcript. This is <b>not true</b> - the plot is a boxplot so it's actually a representing a distribution of cells per transcript with the <b>mean</b> being around 20-30 cells or 30-40 reads.
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgfeb65e7" class="outline-2">
+<h2 id="orgfeb65e7">Plot3: Same as Plot2 but plot cell totals as dots (also useless image, but explains Plot2)</h2>
+<div class="outline-text-2" id="text-orgfeb65e7">
+<p>
+Let's redo the above two plots, but this time plot actual cells and not the misleading distribution.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-R">tmp &lt;- tab %&gt;% mutate(exon=paste(tab$transcript, tab$exon_num, sep="_"))
+tmp
+</pre>
+</div>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">matrix</th>
+<th scope="col" class="org-left">condition</th>
+<th scope="col" class="org-left">transcript</th>
+<th scope="col" class="org-right">exon<sub>num</sub></th>
+<th scope="col" class="org-right">ncells</th>
+<th scope="col" class="org-right">ntrans</th>
+<th scope="col" class="org-left">exon</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">C81732</td>
+<td class="org-left">C817</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">32</td>
+<td class="org-right">45</td>
+<td class="org-left">Dot1l-201<sub>28</sub></td>
+</tr>
+
+<tr>
+<td class="org-left">C81733</td>
+<td class="org-left">C817</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">29</td>
+<td class="org-right">35</td>
+<td class="org-left">Dot1l-201<sub>28</sub></td>
+</tr>
+
+<tr>
+<td class="org-left">C81733</td>
+<td class="org-left">C817</td>
+<td class="org-left">Dot1l-203</td>
+<td class="org-right">2</td>
+<td class="org-right">1</td>
+<td class="org-right">1</td>
+<td class="org-left">Dot1l-203<sub>2</sub></td>
+</tr>
+
+<tr>
+<td class="org-left">C81734</td>
+<td class="org-left">C817</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">18</td>
+<td class="org-right">25</td>
+<td class="org-left">Dot1l-201<sub>28</sub></td>
+</tr>
+
+<tr>
+<td class="org-left">K81312</td>
+<td class="org-left">K813</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">37</td>
+<td class="org-right">55</td>
+<td class="org-left">Dot1l-201<sub>28</sub></td>
+</tr>
+
+<tr>
+<td class="org-left">K81313</td>
+<td class="org-left">K813</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">39</td>
+<td class="org-right">52</td>
+<td class="org-left">Dot1l-201<sub>28</sub></td>
+</tr>
+
+<tr>
+<td class="org-left">K81313</td>
+<td class="org-left">K813</td>
+<td class="org-left">Dot1l-205</td>
+<td class="org-right">5</td>
+<td class="org-right">1</td>
+<td class="org-right">1</td>
+<td class="org-left">Dot1l-205<sub>5</sub></td>
+</tr>
+
+<tr>
+<td class="org-left">K81314</td>
+<td class="org-left">K813</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">25</td>
+<td class="org-right">34</td>
+<td class="org-left">Dot1l-201<sub>28</sub></td>
+</tr>
+
+<tr>
+<td class="org-left">K81321</td>
+<td class="org-left">K813</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">29</td>
+<td class="org-right">31</td>
+<td class="org-left">Dot1l-201<sub>28</sub></td>
+</tr>
+
+<tr>
+<td class="org-left">C81723</td>
+<td class="org-left">C817</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">21</td>
+<td class="org-right">24</td>
+<td class="org-left">Dot1l-201<sub>28</sub></td>
+</tr>
+
+<tr>
+<td class="org-left">K81322</td>
+<td class="org-left">K813</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">38</td>
+<td class="org-right">59</td>
+<td class="org-left">Dot1l-201<sub>28</sub></td>
+</tr>
+
+<tr>
+<td class="org-left">K81322</td>
+<td class="org-left">K813</td>
+<td class="org-left">Dot1l-203</td>
+<td class="org-right">2</td>
+<td class="org-right">1</td>
+<td class="org-right">1</td>
+<td class="org-left">Dot1l-203<sub>2</sub></td>
+</tr>
+
+<tr>
+<td class="org-left">K81323</td>
+<td class="org-left">K813</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">30</td>
+<td class="org-right">35</td>
+<td class="org-left">Dot1l-201<sub>28</sub></td>
+</tr>
+
+<tr>
+<td class="org-left">K81324</td>
+<td class="org-left">K813</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">21</td>
+<td class="org-right">26</td>
+<td class="org-left">Dot1l-201<sub>28</sub></td>
+</tr>
+
+<tr>
+<td class="org-left">K81431</td>
+<td class="org-left">K814</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">37</td>
+<td class="org-right">41</td>
+<td class="org-left">Dot1l-201<sub>28</sub></td>
+</tr>
+
+<tr>
+<td class="org-left">K81432</td>
+<td class="org-left">K814</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">38</td>
+<td class="org-right">43</td>
+<td class="org-left">Dot1l-201<sub>28</sub></td>
+</tr>
+
+<tr>
+<td class="org-left">K81433</td>
+<td class="org-left">K814</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">42</td>
+<td class="org-right">50</td>
+<td class="org-left">Dot1l-201<sub>28</sub></td>
+</tr>
+
+<tr>
+<td class="org-left">K81434</td>
+<td class="org-left">K814</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">26</td>
+<td class="org-right">36</td>
+<td class="org-left">Dot1l-201<sub>28</sub></td>
+</tr>
+
+<tr>
+<td class="org-left">C81724</td>
+<td class="org-left">C817</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">24</td>
+<td class="org-right">33</td>
+<td class="org-left">Dot1l-201<sub>28</sub></td>
+</tr>
+
+<tr>
+<td class="org-left">C81741</td>
+<td class="org-left">C817</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">38</td>
+<td class="org-right">49</td>
+<td class="org-left">Dot1l-201<sub>28</sub></td>
+</tr>
+
+<tr>
+<td class="org-left">C81742</td>
+<td class="org-left">C817</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">30</td>
+<td class="org-right">35</td>
+<td class="org-left">Dot1l-201<sub>28</sub></td>
+</tr>
+
+<tr>
+<td class="org-left">C81743</td>
+<td class="org-left">C817</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">28</td>
+<td class="org-right">33</td>
+<td class="org-left">Dot1l-201<sub>28</sub></td>
+</tr>
+
+<tr>
+<td class="org-left">K81331</td>
+<td class="org-left">K813</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">31</td>
+<td class="org-right">41</td>
+<td class="org-left">Dot1l-201<sub>28</sub></td>
+</tr>
+
+<tr>
+<td class="org-left">K81332</td>
+<td class="org-left">K813</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">21</td>
+<td class="org-right">22</td>
+<td class="org-left">Dot1l-201<sub>28</sub></td>
+</tr>
+
+<tr>
+<td class="org-left">K81333</td>
+<td class="org-left">K813</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">15</td>
+<td class="org-right">19</td>
+<td class="org-left">Dot1l-201<sub>28</sub></td>
+</tr>
+
+<tr>
+<td class="org-left">K81333</td>
+<td class="org-left">K813</td>
+<td class="org-left">Dot1l-203</td>
+<td class="org-right">2</td>
+<td class="org-right">1</td>
+<td class="org-right">1</td>
+<td class="org-left">Dot1l-203<sub>2</sub></td>
+</tr>
+
+<tr>
+<td class="org-left">K81334</td>
+<td class="org-left">K813</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">28</td>
+<td class="org-right">33</td>
+<td class="org-left">Dot1l-201<sub>28</sub></td>
+</tr>
+
+<tr>
+<td class="org-left">K81334</td>
+<td class="org-left">K813</td>
+<td class="org-left">Dot1l-203</td>
+<td class="org-right">2</td>
+<td class="org-right">1</td>
+<td class="org-right">1</td>
+<td class="org-left">Dot1l-203<sub>2</sub></td>
+</tr>
+
+<tr>
+<td class="org-left">K81421</td>
+<td class="org-left">K814</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">18</td>
+<td class="org-right">26</td>
+<td class="org-left">Dot1l-201<sub>28</sub></td>
+</tr>
+
+<tr>
+<td class="org-left">K81422</td>
+<td class="org-left">K814</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">21</td>
+<td class="org-right">25</td>
+<td class="org-left">Dot1l-201<sub>28</sub></td>
+</tr>
+
+<tr>
+<td class="org-left">K81423</td>
+<td class="org-left">K814</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">28</td>
+<td class="org-right">31</td>
+<td class="org-left">Dot1l-201<sub>28</sub></td>
+</tr>
+
+<tr>
+<td class="org-left">K81424</td>
+<td class="org-left">K814</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">34</td>
+<td class="org-right">43</td>
+<td class="org-left">Dot1l-201<sub>28</sub></td>
+</tr>
+
+<tr>
+<td class="org-left">C81744</td>
+<td class="org-left">C817</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">27</td>
+<td class="org-right">1</td>
+<td class="org-right">2</td>
+<td class="org-left">Dot1l-201<sub>27</sub></td>
+</tr>
+
+<tr>
+<td class="org-left">C81744</td>
+<td class="org-left">C817</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">31</td>
+<td class="org-right">50</td>
+<td class="org-left">Dot1l-201<sub>28</sub></td>
+</tr>
+
+<tr>
+<td class="org-left">C81744</td>
+<td class="org-left">C817</td>
+<td class="org-left">Dot1l-204</td>
+<td class="org-right">3</td>
+<td class="org-right">1</td>
+<td class="org-right">1</td>
+<td class="org-left">Dot1l-204<sub>3</sub></td>
+</tr>
+
+<tr>
+<td class="org-left">C81711</td>
+<td class="org-left">C817</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">23</td>
+<td class="org-right">27</td>
+<td class="org-left">Dot1l-201<sub>28</sub></td>
+</tr>
+
+<tr>
+<td class="org-left">C81712</td>
+<td class="org-left">C817</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">29</td>
+<td class="org-right">39</td>
+<td class="org-left">Dot1l-201<sub>28</sub></td>
+</tr>
+
+<tr>
+<td class="org-left">C81712</td>
+<td class="org-left">C817</td>
+<td class="org-left">Dot1l-203</td>
+<td class="org-right">2</td>
+<td class="org-right">1</td>
+<td class="org-right">1</td>
+<td class="org-left">Dot1l-203<sub>2</sub></td>
+</tr>
+
+<tr>
+<td class="org-left">C81712</td>
+<td class="org-left">C817</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">4</td>
+<td class="org-right">1</td>
+<td class="org-right">1</td>
+<td class="org-left">Dot1l-201<sub>4</sub></td>
+</tr>
+
+<tr>
+<td class="org-left">C81713</td>
+<td class="org-left">C817</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">23</td>
+<td class="org-right">28</td>
+<td class="org-left">Dot1l-201<sub>28</sub></td>
+</tr>
+
+<tr>
+<td class="org-left">C81713</td>
+<td class="org-left">C817</td>
+<td class="org-left">Dot1l-203</td>
+<td class="org-right">2</td>
+<td class="org-right">1</td>
+<td class="org-right">1</td>
+<td class="org-left">Dot1l-203<sub>2</sub></td>
+</tr>
+
+<tr>
+<td class="org-left">C81721</td>
+<td class="org-left">C817</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">26</td>
+<td class="org-right">33</td>
+<td class="org-left">Dot1l-201<sub>28</sub></td>
+</tr>
+
+<tr>
+<td class="org-left">C81714</td>
+<td class="org-left">C817</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">21</td>
+<td class="org-right">29</td>
+<td class="org-left">Dot1l-201<sub>28</sub></td>
+</tr>
+
+<tr>
+<td class="org-left">K81342</td>
+<td class="org-left">K813</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">28</td>
+<td class="org-right">35</td>
+<td class="org-left">Dot1l-201<sub>28</sub></td>
+</tr>
+
+<tr>
+<td class="org-left">K81343</td>
+<td class="org-left">K813</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">27</td>
+<td class="org-right">1</td>
+<td class="org-right">1</td>
+<td class="org-left">Dot1l-201<sub>27</sub></td>
+</tr>
+
+<tr>
+<td class="org-left">K81343</td>
+<td class="org-left">K813</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">33</td>
+<td class="org-right">42</td>
+<td class="org-left">Dot1l-201<sub>28</sub></td>
+</tr>
+
+<tr>
+<td class="org-left">K81411</td>
+<td class="org-left">K814</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">28</td>
+<td class="org-right">34</td>
+<td class="org-left">Dot1l-201<sub>28</sub></td>
+</tr>
+
+<tr>
+<td class="org-left">K81411</td>
+<td class="org-left">K814</td>
+<td class="org-left">Dot1l-204</td>
+<td class="org-right">3</td>
+<td class="org-right">1</td>
+<td class="org-right">1</td>
+<td class="org-left">Dot1l-204<sub>3</sub></td>
+</tr>
+
+<tr>
+<td class="org-left">K81412</td>
+<td class="org-left">K814</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">30</td>
+<td class="org-right">40</td>
+<td class="org-left">Dot1l-201<sub>28</sub></td>
+</tr>
+
+<tr>
+<td class="org-left">K81413</td>
+<td class="org-left">K814</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">33</td>
+<td class="org-right">45</td>
+<td class="org-left">Dot1l-201<sub>28</sub></td>
+</tr>
+
+<tr>
+<td class="org-left">K81414</td>
+<td class="org-left">K814</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">11</td>
+<td class="org-right">16</td>
+<td class="org-left">Dot1l-201<sub>28</sub></td>
+</tr>
+
+<tr>
+<td class="org-left">K81441</td>
+<td class="org-left">K814</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">27</td>
+<td class="org-right">2</td>
+<td class="org-right">2</td>
+<td class="org-left">Dot1l-201<sub>27</sub></td>
+</tr>
+
+<tr>
+<td class="org-left">K81441</td>
+<td class="org-left">K814</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">35</td>
+<td class="org-right">50</td>
+<td class="org-left">Dot1l-201<sub>28</sub></td>
+</tr>
+
+<tr>
+<td class="org-left">K81442</td>
+<td class="org-left">K814</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">25</td>
+<td class="org-right">32</td>
+<td class="org-left">Dot1l-201<sub>28</sub></td>
+</tr>
+
+<tr>
+<td class="org-left">K81442</td>
+<td class="org-left">K814</td>
+<td class="org-left">Dot1l-204</td>
+<td class="org-right">3</td>
+<td class="org-right">1</td>
+<td class="org-right">1</td>
+<td class="org-left">Dot1l-204<sub>3</sub></td>
+</tr>
+
+<tr>
+<td class="org-left">C81722</td>
+<td class="org-left">C817</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">23</td>
+<td class="org-right">32</td>
+<td class="org-left">Dot1l-201<sub>28</sub></td>
+</tr>
+
+<tr>
+<td class="org-left">K81443</td>
+<td class="org-left">K814</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">27</td>
+<td class="org-right">1</td>
+<td class="org-right">1</td>
+<td class="org-left">Dot1l-201<sub>27</sub></td>
+</tr>
+
+<tr>
+<td class="org-left">K81443</td>
+<td class="org-left">K814</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">30</td>
+<td class="org-right">42</td>
+<td class="org-left">Dot1l-201<sub>28</sub></td>
+</tr>
+
+<tr>
+<td class="org-left">K81443</td>
+<td class="org-left">K814</td>
+<td class="org-left">Dot1l-203</td>
+<td class="org-right">2</td>
+<td class="org-right">1</td>
+<td class="org-right">1</td>
+<td class="org-left">Dot1l-203<sub>2</sub></td>
+</tr>
+
+<tr>
+<td class="org-left">K81444</td>
+<td class="org-left">K814</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">27</td>
+<td class="org-right">1</td>
+<td class="org-right">1</td>
+<td class="org-left">Dot1l-201<sub>27</sub></td>
+</tr>
+
+<tr>
+<td class="org-left">K81444</td>
+<td class="org-left">K814</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">34</td>
+<td class="org-right">45</td>
+<td class="org-left">Dot1l-201<sub>28</sub></td>
+</tr>
+
+<tr>
+<td class="org-left">C81731</td>
+<td class="org-left">C817</td>
+<td class="org-left">Dot1l-201</td>
+<td class="org-right">28</td>
+<td class="org-right">30</td>
+<td class="org-right">38</td>
+<td class="org-left">Dot1l-201<sub>28</sub></td>
+</tr>
+</tbody>
+</table>
+
+
+<div class="org-src-container">
+<pre class="src src-R">tmp %&gt;% group_by(condition, transcript) %&gt;% summarize(ncells) %&gt;%
+  ggplot(aes(transcript, ncells, colour=condition)) + 
+  geom_point(position=position_dodge(width=0.7), aes(group=condition)) + 
+  scale_y_continuous(name="Frequency of Cells", breaks=c(0,5,10, seq(10,50,10)))
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="imgs/cells_reads.distrib2.png" alt="cells_reads.distrib2.png" />
+</p>
+</div>
+
+
+<p>
+So what is actually being shown here? Each dot is the number of cells that a specific <b>matrix</b> (of which there are many matrices for a given condition) maps to a specific <b>transcript's exon</b>. The cells were coloured by condition, and grouped by transcript. So two red dots in Dot1l-201 could indicate 
+</p>
+<ol class="org-ol">
+<li>Number of cells mapping to different exons</li>
+<li>Number of cells from different matrices</li>
+<li>A combination of the above two.</li>
+</ol>
+
+<p>
+Yes, this is a confusing plot and should be ignored, but it offers an explanation for what the previous boxplot represented.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org7d63a90" class="outline-2">
+<h2 id="org7d63a90">Plot4: The total cells that mapped to each transcript (transcript<sub>exon</sub>-level)</h2>
+<div class="outline-text-2" id="text-org7d63a90">
+<p>
+A <b>better</b> way of representing the above graphic is if we merge all matrices so that we only see the condition.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-R">tmp2 &lt;- tmp %&gt;% group_by(condition, exon) %&gt;% summarise(totalcells=sum(ncells))
+tmp2
+</pre>
+</div>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">condition</th>
+<th scope="col" class="org-left">exon</th>
+<th scope="col" class="org-right">totalcells</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">C817</td>
+<td class="org-left">Dot1l-201<sub>27</sub></td>
+<td class="org-right">1</td>
+</tr>
+
+<tr>
+<td class="org-left">C817</td>
+<td class="org-left">Dot1l-201<sub>28</sub></td>
+<td class="org-right">426</td>
+</tr>
+
+<tr>
+<td class="org-left">C817</td>
+<td class="org-left">Dot1l-201<sub>4</sub></td>
+<td class="org-right">1</td>
+</tr>
+
+<tr>
+<td class="org-left">C817</td>
+<td class="org-left">Dot1l-203<sub>2</sub></td>
+<td class="org-right">3</td>
+</tr>
+
+<tr>
+<td class="org-left">C817</td>
+<td class="org-left">Dot1l-204<sub>3</sub></td>
+<td class="org-right">1</td>
+</tr>
+
+<tr>
+<td class="org-left">K813</td>
+<td class="org-left">Dot1l-201<sub>27</sub></td>
+<td class="org-right">1</td>
+</tr>
+
+<tr>
+<td class="org-left">K813</td>
+<td class="org-left">Dot1l-201<sub>28</sub></td>
+<td class="org-right">375</td>
+</tr>
+
+<tr>
+<td class="org-left">K813</td>
+<td class="org-left">Dot1l-203<sub>2</sub></td>
+<td class="org-right">3</td>
+</tr>
+
+<tr>
+<td class="org-left">K813</td>
+<td class="org-left">Dot1l-205<sub>5</sub></td>
+<td class="org-right">1</td>
+</tr>
+
+<tr>
+<td class="org-left">K814</td>
+<td class="org-left">Dot1l-201<sub>27</sub></td>
+<td class="org-right">4</td>
+</tr>
+
+<tr>
+<td class="org-left">K814</td>
+<td class="org-left">Dot1l-201<sub>28</sub></td>
+<td class="org-right">470</td>
+</tr>
+
+<tr>
+<td class="org-left">K814</td>
+<td class="org-left">Dot1l-203<sub>2</sub></td>
+<td class="org-right">1</td>
+</tr>
+
+<tr>
+<td class="org-left">K814</td>
+<td class="org-left">Dot1l-204<sub>3</sub></td>
+<td class="org-right">2</td>
+</tr>
+</tbody>
+</table>
+
+
+<div class="org-src-container">
+<pre class="src src-R">p1 &lt;- tmp2 %&gt;% ggplot(aes(x=exon, y=totalcells, fill=condition)) +
+      geom_bar(position='dodge2',stat='identity') +
+      xlab("Transcript_Exon Name") +
+      ggtitle("Cells mapped to a a specific transcript's exon") +
+      scale_y_continuous(name="Number of Cells", breaks=seq(0,500,50))
+
+p2 &lt;- tmp2 %&gt;% filter(exon!="Dot1l-201_28") %&gt;%
+      ggplot(aes(x=exon, y=totalcells, fill=condition)) +
+      geom_bar(position='dodge2',stat='identity') +
+      xlab("Transcript_Exon Name") +
+      ggtitle("Zoomed of above (without Dot1l-28)") +
+      scale_y_continuous(name="Number of Cells", breaks=seq(0,5,1))
+
+grid.arrange(p1,p2, ncol=1)
+
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="imgs/cells_reads.distrib3.png" alt="cells_reads.distrib3.png" />
+</p>
+</div>
+
+
+<p>
+Here Dot1l-201 appears to be the most represented transcript just from Exon28 alone (top). However if we exclude that particular exon and look at the others (bottom), we see that Dot1L-201 appears to be more represented in K814 than others (4 vs 1 and 1), and that Dot1L-203 appears to be the second most represented transcript (3-3-1). 
+</p>
+</div>
+</div>
+
+<div id="outline-container-org7fa09a6" class="outline-2">
+<h2 id="org7fa09a6">Plot 5: The total cells that mapped to each Dot1l-201 (Canonical Transcript) exon</h2>
+<div class="outline-text-2" id="text-org7fa09a6">
+<p>
+If we look at our first plot we see that Dot1l-201 is the most populated transcript (most likely because it is the canonical transcript). Let's see how many cells map to which specific exon's of that transcript.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-R">tmp3 &lt;- tmp %&gt;% filter(transcript=="Dot1l-201") %&gt;% 
+  group_by(exon_num, condition) %&gt;% summarise(totalcells=sum(ncells))
+tmp3
+</pre>
+</div>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-right" />
+
+<col  class="org-left" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-right">exon<sub>num</sub></th>
+<th scope="col" class="org-left">condition</th>
+<th scope="col" class="org-right">totalcells</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-right">4</td>
+<td class="org-left">C817</td>
+<td class="org-right">1</td>
+</tr>
+
+<tr>
+<td class="org-right">27</td>
+<td class="org-left">C817</td>
+<td class="org-right">1</td>
+</tr>
+
+<tr>
+<td class="org-right">27</td>
+<td class="org-left">K813</td>
+<td class="org-right">1</td>
+</tr>
+
+<tr>
+<td class="org-right">27</td>
+<td class="org-left">K814</td>
+<td class="org-right">4</td>
+</tr>
+
+<tr>
+<td class="org-right">28</td>
+<td class="org-left">C817</td>
+<td class="org-right">426</td>
+</tr>
+
+<tr>
+<td class="org-right">28</td>
+<td class="org-left">K813</td>
+<td class="org-right">375</td>
+</tr>
+
+<tr>
+<td class="org-right">28</td>
+<td class="org-left">K814</td>
+<td class="org-right">470</td>
+</tr>
+</tbody>
+</table>
+
+
+<div class="org-src-container">
+<pre class="src src-R">tmp3 %&gt;% ggplot(aes(x=exon_num, y=totalcells, fill=condition)) +
+      geom_bar(position='dodge2',stat='identity') +
+      xlab("Transcript_Exon Name") +
+      ggtitle("Cells mapped to transcript Dot1l-201, an exon specific view") +
+      scale_y_continuous(name="Number of Cells", breaks=seq(0,500,50))
+
+  #%&gt;%
+  #ggplot(aes(transcript, ncells, colour=condition)) + 
+  #geom_point(position=position_dodge(width=0.7), aes(group=condition)) + 
+  #scale_y_continuous(name="Frequency of Cells", breaks=c(0,5,10, seq(10,50,10)))
+
+
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="imgs/cells_reads.distrib4.png" alt="cells_reads.distrib4.png" />
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="author">Author: Mehmet Tekman</p>
+<p class="date">Created: 2020-07-23 Thu 23:56</p>
+<p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>

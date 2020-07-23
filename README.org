@@ -1,6 +1,5 @@
-#+TITLE: Salas 2020 dataset
+#+TITLE: Salas 2020 Dot1L Plots
 #+PROPERTY: header-args :exports both :eval never-export
-#+SETUPFILE: https://fniessen.github.io/org-html-themes/setup/theme-readtheorg.setup
 #+OPTIONS: H:4 num:nil toc:5
 #+EXCLUDE_TAGS: noexport
 #+AUTHOR: Mehmet Tekman
@@ -29,7 +28,9 @@ Not for export, we redefine the html image function to embed all images in-house
 #+end_src
 
 
-* Dot1l Plots
+* Get Data
+
+  Here we read in the =results.csv= file which contains the exon-level quantification matrices filtered to only given Dot1L transcripts.
 
   #+begin_src R :session yes :colnames yes
     library(ggplot2)
@@ -116,7 +117,7 @@ Not for export, we redefine the html image function to embed all images in-house
   | K81444 | K814      | Dot1l-201  |       28 |     34 |     45 |
   | C81731 | C817      | Dot1l-201  |       28 |     30 |     38 |
 
-** First Plot
+* Plot1: The total cells that mapped to each transcript (transcript-level)
 
    #+begin_src R :session yes :colnames yes
          ## First Plot shows how many cells for each condition, grouped by transcript
@@ -153,7 +154,7 @@ Not for export, we redefine the html image function to embed all images in-house
    Most of our cells map to the Dot1l-201 transcript. A few stray cells map to the others (see the table above).
 
 
-** Second Plot (the one's before)
+* Plot2: The weird plots we had before (distribution of cell mappings, useless image)
 
    #+begin_src R :session yes :file imgs/cells_reads.distrib.png :results graphics file
      p1 <- ggplot(tab, aes(transcript, ntrans, colour = condition)) +
@@ -173,7 +174,7 @@ Not for export, we redefine the html image function to embed all images in-house
 
    These were the two unclear plots we had before which seemed to suggest only 20-30 or so cells per Dot1L transcript, or 30-40 reads mapped per Dot1L transcript. This is *not true* - the plot is a boxplot so it's actually a representing a distribution of cells per transcript with the *mean* being around 20-30 cells or 30-40 reads.
 
-** Third Plot (Not a boxplot)
+* Plot3: Same as Plot2 but plot cell totals as dots (also useless image, but explains Plot2)
 
    Let's redo the above two plots, but this time plot actual cells and not the misleading distribution.
 
@@ -267,7 +268,7 @@ Not for export, we redefine the html image function to embed all images in-house
 
 Yes, this is a confusing plot and should be ignored, but it offers an explanation for what the previous boxplot represented.
 
-** Fourth Plot
+* Plot4: The total cells that mapped to each transcript (transcript_exon-level)
 
    A *better* way of representing the above graphic is if we merge all matrices so that we only see the condition.
 
@@ -318,7 +319,7 @@ Yes, this is a confusing plot and should be ignored, but it offers an explanatio
 
    Here Dot1l-201 appears to be the most represented transcript just from Exon28 alone (top). However if we exclude that particular exon and look at the others (bottom), we see that Dot1L-201 appears to be more represented in K814 than others (4 vs 1 and 1), and that Dot1L-203 appears to be the second most represented transcript (3-3-1). 
 
-** Fourth Plot
+* Plot 5: The total cells that mapped to each Dot1l-201 (Canonical Transcript) exon
 
    If we look at our first plot we see that Dot1l-201 is the most populated transcript (most likely because it is the canonical transcript). Let's see how many cells map to which specific exon's of that transcript.
 
