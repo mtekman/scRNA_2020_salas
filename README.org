@@ -1,6 +1,32 @@
 #+TITLE: Salas 2020 dataset
+#+PROPERTY: header-args :exports both :eval never-export
+#+SETUPFILE: https://fniessen.github.io/org-html-themes/setup/theme-readtheorg.setup
+#+OPTIONS: H:4 num:nil toc:5
+#+EXCLUDE_TAGS: noexport
+#+AUTHOR: Mehmet Tekman
 
 Here we re-examine the individual exon-level mappings
+
+* Variables :noexport:
+
+Not for export, we redefine the html image function to embed all images in-house
+
+#+begin_src elisp
+  (defun replace-in-string (what with in)
+    (replace-regexp-in-string (regexp-quote what) with in nil 'literal))
+
+  (defun org-html--format-image (source attributes info)
+    (progn
+      (setq source (replace-in-string "%20" " " source))
+      (format "<img src=\"data:image/%s;base64,%s\"%s />"
+              (or (file-name-extension source) "")
+              (base64-encode-string
+               (with-temp-buffer
+                 (insert-file-contents-literally source)
+                (buffer-string)))
+              (file-name-nondirectory source))
+      ))
+#+end_src
 
 
 * Dot1l Plots
@@ -332,5 +358,3 @@ Yes, this is a confusing plot and should be ignored, but it offers an explanatio
    #+RESULTS:
    [[file:imgs/cells_reads.distrib4.png]]
 
-
-   
