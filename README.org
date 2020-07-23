@@ -3,9 +3,9 @@
 Here we re-examine the individual exon-level mappings
 
 
-* Plots
+* Dot1l Plots
 
-  #+begin_src R
+  #+begin_src R :session yes :colnames yes
     library(ggplot2)
     library(gridExtra)
     library(dplyr)
@@ -16,36 +16,140 @@ Here we re-examine the individual exon-level mappings
     tab$transcript <- as.factor(sapply(strsplit(tab$exon, split="_"), function(x){x[[1]]}))
     tab$exonNum <- as.factor(sapply(strsplit(tab$exon, split="_"), function(x){as.integer(x[[2]])}))
 
-    ## First Plot shows how many cells for each condition, grouped by transcript
-    t1.cells <- tab %>% group_by(transcript, condition) %>% summarise(totalcells=sum(ncells))
-    t1.cells %>% ggplot(aes(x=transcript, y=totalcells, fill=condition)) +
-      geom_bar(position='dodge2',stat='identity') +
-      xlab("Total Cells") +
-      ggtitle("Number of Cells Mapped to Transcript") +
-      scale_y_continuous(name="Transcript Name", breaks=seq(0,500,50))
+    tabdata <- data.frame(matrix=tab$matrix, condition=tab$condition,
+                          #gene=tab$gene, 
+                          transcript=tab$transcript, exon_num=tab$exonNum, 
+                          ncells=tab$ncells, ntrans=tab$ntrans)
 
-
-    xlabels = c('Dot1l-201_4', 'Dot1l-201_27', 'Dot1l-201_28', 'Dot1l-203_2', 'Dot1l-204_3', 'Dot1l-205_5')
-
-    margins = margin(1, 0, 1, 0, "cm")
-
-    p1 <- ggplot(tab, aes(exon, ntrans, colour = condition)) + scale_x_discrete(limits=xlabels) + xlab("TranscriptID_ExonNumber") + ylab("Total Reads") + geom_boxplot() + ggtitle("Reads Mapped to Exon") + theme(plot.margin = margins)
-
-    p2 <- ggplot(tab, aes(exon, ncells, colour = condition)) + scale_x_discrete(limits=xlabels) + xlab("TranscriptID_ExonNumber") + ylab("Total Cells") + geom_boxplot() + ggtitle("Cells in which Exon was detected") + theme(plot.margin = margins)
-
-    p3 <- ggplot(tab, aes(exon, ntrans, colour = condition, size = ncells)) + scale_x_discrete(limits=xlabels) + xlab("TranscriptID_ExonNumber") + ylab("Total Reads") + geom_jitter(width=0.2) + ggtitle("Reads Mapped to each Exon, sized by number of cells") + theme(plot.margin = margins) + scale_size_continuous(range = c(1, 3))
-
-    ## Let's ignore exon28, and just look at the remainder
-    ## Unfortunately, most other exons simply express 1 transcript in 1 cell
-    not28=tab[tab$exon != "Dot1l-201_28",]
-
-    xlabels28 = c('Dot1l-201_4', 'Dot1l-201_27', 'Dot1l-203_2', 'Dot1l-204_3', 'Dot1l-205_5')
-
-    p4 <- ggplot(not28, aes(exon, ntrans, colour = condition, size=factor(ncells))) + scale_x_discrete(limits=xlabels28) + xlab("TranscriptID_ExonNumber") + ylab("Total Reads") + geom_point() + ggtitle("Unique number of Cells for each Exon (not including exon Dot1l-201_28)") + ylim(0,3) + theme(plot.margin = margins)
-
-
-    svg("salas_summary.svg", width=7, height=14)
-    grid.arrange(p1,p2,p3,p4, ncol=1)
-    dev.off()
-
+    tab <- tabdata
   #+end_src
+
+  #+RESULTS:
+  | matrix | condition | transcript | exon_num | ncells | ntrans |
+  |--------+-----------+------------+----------+--------+--------|
+  | C81732 | C817      | Dot1l-201  |       28 |     32 |     45 |
+  | C81733 | C817      | Dot1l-201  |       28 |     29 |     35 |
+  | C81733 | C817      | Dot1l-203  |        2 |      1 |      1 |
+  | C81734 | C817      | Dot1l-201  |       28 |     18 |     25 |
+  | K81312 | K813      | Dot1l-201  |       28 |     37 |     55 |
+  | K81313 | K813      | Dot1l-201  |       28 |     39 |     52 |
+  | K81313 | K813      | Dot1l-205  |        5 |      1 |      1 |
+  | K81314 | K813      | Dot1l-201  |       28 |     25 |     34 |
+  | K81321 | K813      | Dot1l-201  |       28 |     29 |     31 |
+  | C81723 | C817      | Dot1l-201  |       28 |     21 |     24 |
+  | K81322 | K813      | Dot1l-201  |       28 |     38 |     59 |
+  | K81322 | K813      | Dot1l-203  |        2 |      1 |      1 |
+  | K81323 | K813      | Dot1l-201  |       28 |     30 |     35 |
+  | K81324 | K813      | Dot1l-201  |       28 |     21 |     26 |
+  | K81431 | K814      | Dot1l-201  |       28 |     37 |     41 |
+  | K81432 | K814      | Dot1l-201  |       28 |     38 |     43 |
+  | K81433 | K814      | Dot1l-201  |       28 |     42 |     50 |
+  | K81434 | K814      | Dot1l-201  |       28 |     26 |     36 |
+  | C81724 | C817      | Dot1l-201  |       28 |     24 |     33 |
+  | C81741 | C817      | Dot1l-201  |       28 |     38 |     49 |
+  | C81742 | C817      | Dot1l-201  |       28 |     30 |     35 |
+  | C81743 | C817      | Dot1l-201  |       28 |     28 |     33 |
+  | K81331 | K813      | Dot1l-201  |       28 |     31 |     41 |
+  | K81332 | K813      | Dot1l-201  |       28 |     21 |     22 |
+  | K81333 | K813      | Dot1l-201  |       28 |     15 |     19 |
+  | K81333 | K813      | Dot1l-203  |        2 |      1 |      1 |
+  | K81334 | K813      | Dot1l-201  |       28 |     28 |     33 |
+  | K81334 | K813      | Dot1l-203  |        2 |      1 |      1 |
+  | K81421 | K814      | Dot1l-201  |       28 |     18 |     26 |
+  | K81422 | K814      | Dot1l-201  |       28 |     21 |     25 |
+  | K81423 | K814      | Dot1l-201  |       28 |     28 |     31 |
+  | K81424 | K814      | Dot1l-201  |       28 |     34 |     43 |
+  | C81744 | C817      | Dot1l-201  |       27 |      1 |      2 |
+  | C81744 | C817      | Dot1l-201  |       28 |     31 |     50 |
+  | C81744 | C817      | Dot1l-204  |        3 |      1 |      1 |
+  | C81711 | C817      | Dot1l-201  |       28 |     23 |     27 |
+  | C81712 | C817      | Dot1l-201  |       28 |     29 |     39 |
+  | C81712 | C817      | Dot1l-203  |        2 |      1 |      1 |
+  | C81712 | C817      | Dot1l-201  |        4 |      1 |      1 |
+  | C81713 | C817      | Dot1l-201  |       28 |     23 |     28 |
+  | C81713 | C817      | Dot1l-203  |        2 |      1 |      1 |
+  | C81721 | C817      | Dot1l-201  |       28 |     26 |     33 |
+  | C81714 | C817      | Dot1l-201  |       28 |     21 |     29 |
+  | K81342 | K813      | Dot1l-201  |       28 |     28 |     35 |
+  | K81343 | K813      | Dot1l-201  |       27 |      1 |      1 |
+  | K81343 | K813      | Dot1l-201  |       28 |     33 |     42 |
+  | K81411 | K814      | Dot1l-201  |       28 |     28 |     34 |
+  | K81411 | K814      | Dot1l-204  |        3 |      1 |      1 |
+  | K81412 | K814      | Dot1l-201  |       28 |     30 |     40 |
+  | K81413 | K814      | Dot1l-201  |       28 |     33 |     45 |
+  | K81414 | K814      | Dot1l-201  |       28 |     11 |     16 |
+  | K81441 | K814      | Dot1l-201  |       27 |      2 |      2 |
+  | K81441 | K814      | Dot1l-201  |       28 |     35 |     50 |
+  | K81442 | K814      | Dot1l-201  |       28 |     25 |     32 |
+  | K81442 | K814      | Dot1l-204  |        3 |      1 |      1 |
+  | C81722 | C817      | Dot1l-201  |       28 |     23 |     32 |
+  | K81443 | K814      | Dot1l-201  |       27 |      1 |      1 |
+  | K81443 | K814      | Dot1l-201  |       28 |     30 |     42 |
+  | K81443 | K814      | Dot1l-203  |        2 |      1 |      1 |
+  | K81444 | K814      | Dot1l-201  |       27 |      1 |      1 |
+  | K81444 | K814      | Dot1l-201  |       28 |     34 |     45 |
+  | C81731 | C817      | Dot1l-201  |       28 |     30 |     38 |
+
+** First Plot
+
+   #+begin_src R :session yes :colnames yes
+         ## First Plot shows how many cells for each condition, grouped by transcript
+         t1.cells <- tab %>% group_by(transcript, condition) %>% summarise(totalcells=sum(ncells))
+         t1.cells
+   #+end_src
+
+   #+RESULTS:
+   | transcript | condition | totalcells |
+   |------------+-----------+------------|
+   | Dot1l-201  | C817      |        428 |
+   | Dot1l-201  | K813      |        376 |
+   | Dot1l-201  | K814      |        474 |
+   | Dot1l-203  | C817      |          3 |
+   | Dot1l-203  | K813      |          3 |
+   | Dot1l-203  | K814      |          1 |
+   | Dot1l-204  | C817      |          1 |
+   | Dot1l-204  | K814      |          2 |
+   | Dot1l-205  | K813      |          1 |
+
+   #+begin_src R :session yes :file cells.trans.png :results graphics file
+         t1.cells %>% ggplot(aes(x=transcript, y=totalcells, fill=condition)) +
+           geom_bar(position='dodge2',stat='identity') +
+           xlab("Transcript Name") +
+           ggtitle("Number of Cells Mapped to Transcript") +
+           scale_y_continuous(name="Number of Cells", breaks=seq(0,500,50))
+
+   #+end_src
+
+   #+RESULTS:
+   [[file:cells.trans.png]]
+
+
+   Most of our cells map to the Dot1l-201 transcript. A few stray cells map to the others (see the table above).
+
+
+** Second Plot
+
+   #+begin_src R :session yes
+     ## Second Plot, this was the confusing one because the boxplot gives
+     ## a *distribution* of total reads per 
+     ggplot(tab, aes(exon, ntrans, colour = condition)) +
+       xlab("TranscriptID_ExonNumber") + ylab("Total Reads") +
+       geom_boxplot() + ggtitle("Reads Mapped to Exon")
+
+     p2 <- ggplot(tab, aes(exon, ncells, colour = condition)) + scale_x_discrete(limits=xlabels) + xlab("TranscriptID_ExonNumber") + ylab("Total Cells") + geom_boxplot() + ggtitle("Cells in which Exon was detected") + theme(plot.margin = margins)
+
+     p3 <- ggplot(tab, aes(exon, ntrans, colour = condition, size = ncells)) + scale_x_discrete(limits=xlabels) + xlab("TranscriptID_ExonNumber") + ylab("Total Reads") + geom_jitter(width=0.2) + ggtitle("Reads Mapped to each Exon, sized by number of cells") + theme(plot.margin = margins) + scale_size_continuous(range = c(1, 3))
+
+     ## Let's ignore exon28, and just look at the remainder
+     ## Unfortunately, most other exons simply express 1 transcript in 1 cell
+     not28=tab[tab$exon != "Dot1l-201_28",]
+
+     xlabels28 = c('Dot1l-201_4', 'Dot1l-201_27', 'Dot1l-203_2', 'Dot1l-204_3', 'Dot1l-205_5')
+
+     p4 <- ggplot(not28, aes(exon, ntrans, colour = condition, size=factor(ncells))) + scale_x_discrete(limits=xlabels28) + xlab("TranscriptID_ExonNumber") + ylab("Total Reads") + geom_point() + ggtitle("Unique number of Cells for each Exon (not including exon Dot1l-201_28)") + ylim(0,3) + theme(plot.margin = margins)
+
+
+     svg("salas_summary.svg", width=7, height=14)
+     grid.arrange(p1,p2,p3,p4, ncol=1)
+     dev.off()
+   #+end_src
