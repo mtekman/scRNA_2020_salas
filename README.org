@@ -111,7 +111,7 @@ Here we re-examine the individual exon-level mappings
    | Dot1l-204  | K814      |          2 |
    | Dot1l-205  | K813      |          1 |
 
-   #+begin_src R :session yes :file cells.trans.png :results graphics file
+   #+begin_src R :session yes :file imgs/cells.trans.png :results graphics file
          t1.cells %>% ggplot(aes(x=transcript, y=totalcells, fill=condition)) +
            geom_bar(position='dodge2',stat='identity') +
            xlab("Transcript Name") +
@@ -121,7 +121,7 @@ Here we re-examine the individual exon-level mappings
    #+end_src
 
    #+RESULTS:
-   [[file:cells.trans.png]]
+   [[file:imgs/cells.trans.png]]
 
 
    Most of our cells map to the Dot1l-201 transcript. A few stray cells map to the others (see the table above).
@@ -129,7 +129,7 @@ Here we re-examine the individual exon-level mappings
 
 ** Second Plot (the one's before)
 
-   #+begin_src R :session yes :file cells_reads.distrib.png :results graphics file
+   #+begin_src R :session yes :file imgs/cells_reads.distrib.png :results graphics file
      p1 <- ggplot(tab, aes(transcript, ntrans, colour = condition)) +
        xlab("Transcript Name") + ylab("Read Distribution") +
        geom_boxplot() + ggtitle("Reads Mapped to Exon")
@@ -142,7 +142,7 @@ Here we re-examine the individual exon-level mappings
    #+end_src
 
    #+RESULTS:
-   [[file:cells_reads.distrib.png]]
+   [[file:imgs/cells_reads.distrib.png]]
 
 
    These were the two unclear plots we had before which seemed to suggest only 20-30 or so cells per Dot1L transcript, or 30-40 reads mapped per Dot1L transcript. This is *not true* - the plot is a boxplot so it's actually a representing a distribution of cells per transcript with the *mean* being around 20-30 cells or 30-40 reads.
@@ -223,7 +223,7 @@ Here we re-examine the individual exon-level mappings
    | C81731 | C817      | Dot1l-201  |       28 |     30 |     38 | Dot1l-201_28 |
 
 
-   #+begin_src R :session yes :file cells_reads.distrib2.png :results graphics file
+   #+begin_src R :session yes :file imgs/cells_reads.distrib2.png :results graphics file
      tmp %>% group_by(condition, transcript) %>% summarize(ncells) %>%
        ggplot(aes(transcript, ncells, colour=condition)) + 
        geom_point(position=position_dodge(width=0.7), aes(group=condition)) + 
@@ -231,7 +231,7 @@ Here we re-examine the individual exon-level mappings
    #+end_src
 
    #+RESULTS:
-   [[file:cells_reads.distrib2.png]]
+   [[file:imgs/cells_reads.distrib2.png]]
 
 
    So what is actually being shown here? Each dot is the number of cells that a specific *matrix* (of which there are many matrices for a given condition) maps to a specific *transcript's exon*. The cells were coloured by condition, and grouped by transcript. So two red dots in Dot1l-201 could indicate 
@@ -268,7 +268,7 @@ Yes, this is a confusing plot and should be ignored, but it offers an explanatio
    | K814      | Dot1l-204_3  |          2 |
 
 
-   #+begin_src R :session yes :file cells_reads.distrib3.png :results graphics file
+   #+begin_src R :session yes :file imgs/cells_reads.distrib3.png :results graphics file
      p1 <- tmp2 %>% ggplot(aes(x=exon, y=totalcells, fill=condition)) +
            geom_bar(position='dodge2',stat='identity') +
            xlab("Transcript_Exon Name") +
@@ -287,7 +287,7 @@ Yes, this is a confusing plot and should be ignored, but it offers an explanatio
    #+end_src
 
    #+RESULTS:
-   [[file:cells_reads.distrib3.png]]
+   [[file:imgs/cells_reads.distrib3.png]]
 
 
    Here Dot1l-201 appears to be the most represented transcript just from Exon28 alone (top). However if we exclude that particular exon and look at the others (bottom), we see that Dot1L-201 appears to be more represented in K814 than others (4 vs 1 and 1), and that Dot1L-203 appears to be the second most represented transcript (3-3-1). 
@@ -295,8 +295,6 @@ Yes, this is a confusing plot and should be ignored, but it offers an explanatio
 ** Fourth Plot
 
    If we look at our first plot we see that Dot1l-201 is the most populated transcript (most likely because it is the canonical transcript). Let's see how many cells map to which specific exon's of that transcript.
-
- :file dot1l-201.exon.distrib.png :results graphics file
 
    #+begin_src R :session yes :colnames yes
      tmp3 <- tmp %>% filter(transcript=="Dot1l-201") %>% 
@@ -316,7 +314,7 @@ Yes, this is a confusing plot and should be ignored, but it offers an explanatio
    |       28 | K814      |        470 |
 
 
-   #+begin_src R :session yes :file cells_reads.distrib4.png :results graphics file
+   #+begin_src R :session yes :file imgs/cells_reads.distrib4.png :results graphics file
      tmp3 %>% ggplot(aes(x=exon_num, y=totalcells, fill=condition)) +
            geom_bar(position='dodge2',stat='identity') +
            xlab("Transcript_Exon Name") +
@@ -332,7 +330,7 @@ Yes, this is a confusing plot and should be ignored, but it offers an explanatio
    #+end_src
 
    #+RESULTS:
-   [[file:cells_reads.distrib4.png]]
+   [[file:imgs/cells_reads.distrib4.png]]
 
 
    
