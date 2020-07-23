@@ -1,4 +1,5 @@
 #+TITLE: Salas 2020 Dot1L Plots
+#+SETUPFILE: https://fniessen.github.io/org-html-themes/setup/theme-readtheorg.setup
 #+PROPERTY: header-args :exports both :eval never-export
 #+OPTIONS: H:4 num:nil toc:5
 #+EXCLUDE_TAGS: noexport
@@ -268,7 +269,7 @@ Not for export, we redefine the html image function to embed all images in-house
 
 Yes, this is a confusing plot and should be ignored, but it offers an explanation for what the previous boxplot represented.
 
-* Plot4: The total cells that mapped to each transcript (transcript_exon-level)
+* Plot4: The total cells that mapped to each transcript (transcript _ exon-level)
 
    A *better* way of representing the above graphic is if we merge all matrices so that we only see the condition.
 
