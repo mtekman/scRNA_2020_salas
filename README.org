@@ -234,13 +234,105 @@ Here we re-examine the individual exon-level mappings
    [[file:cells_reads.distrib2.png]]
 
 
-   So what is actually being shown here? Each dot is the number of cells that a specific *matrix* (of which there are many matrices for a given condition) maps to a specific *transcript's exon*. The cells were coloured by condition, and grouped by transcript. Yes, this is a confusing plot and should be ignored, but it offers an explanation for what the previous boxplot represented.
+   So what is actually being shown here? Each dot is the number of cells that a specific *matrix* (of which there are many matrices for a given condition) maps to a specific *transcript's exon*. The cells were coloured by condition, and grouped by transcript. So two red dots in Dot1l-201 could indicate 
+   1. Number of cells mapping to different exons
+   2. Number of cells from different matrices
+   3. A combination of the above two.
 
+Yes, this is a confusing plot and should be ignored, but it offers an explanation for what the previous boxplot represented.
 
 ** Fourth Plot
 
-   If we look at our first plot we see that Dot1l-201 is the most populated transcript. Let's see how many cells map to which specific exon's of that transcript.
+   A *better* way of representing the above graphic is if we merge all matrices so that we only see the condition.
 
-
-   #+begin_src R :session yes
+   #+begin_src R :session yes :colnames yes
+     tmp2 <- tmp %>% group_by(condition, exon) %>% summarise(totalcells=sum(ncells))
+     tmp2
    #+end_src
+
+   #+RESULTS:
+   | condition | exon         | totalcells |
+   |-----------+--------------+------------|
+   | C817      | Dot1l-201_27 |          1 |
+   | C817      | Dot1l-201_28 |        426 |
+   | C817      | Dot1l-201_4  |          1 |
+   | C817      | Dot1l-203_2  |          3 |
+   | C817      | Dot1l-204_3  |          1 |
+   | K813      | Dot1l-201_27 |          1 |
+   | K813      | Dot1l-201_28 |        375 |
+   | K813      | Dot1l-203_2  |          3 |
+   | K813      | Dot1l-205_5  |          1 |
+   | K814      | Dot1l-201_27 |          4 |
+   | K814      | Dot1l-201_28 |        470 |
+   | K814      | Dot1l-203_2  |          1 |
+   | K814      | Dot1l-204_3  |          2 |
+
+
+   #+begin_src R :session yes :file cells_reads.distrib3.png :results graphics file
+     p1 <- tmp2 %>% ggplot(aes(x=exon, y=totalcells, fill=condition)) +
+           geom_bar(position='dodge2',stat='identity') +
+           xlab("Transcript_Exon Name") +
+           ggtitle("Cells mapped to a a specific transcript's exon") +
+           scale_y_continuous(name="Number of Cells", breaks=seq(0,500,50))
+
+     p2 <- tmp2 %>% filter(exon!="Dot1l-201_28") %>%
+           ggplot(aes(x=exon, y=totalcells, fill=condition)) +
+           geom_bar(position='dodge2',stat='identity') +
+           xlab("Transcript_Exon Name") +
+           ggtitle("Zoomed of above (without Dot1l-28)") +
+           scale_y_continuous(name="Number of Cells", breaks=seq(0,5,1))
+
+     grid.arrange(p1,p2, ncol=1)
+
+   #+end_src
+
+   #+RESULTS:
+   [[file:cells_reads.distrib3.png]]
+
+
+   Here Dot1l-201 appears to be the most represented transcript just from Exon28 alone (top). However if we exclude that particular exon and look at the others (bottom), we see that Dot1L-201 appears to be more represented in K814 than others (4 vs 1 and 1), and that Dot1L-203 appears to be the second most represented transcript (3-3-1). 
+
+** Fourth Plot
+
+   If we look at our first plot we see that Dot1l-201 is the most populated transcript (most likely because it is the canonical transcript). Let's see how many cells map to which specific exon's of that transcript.
+
+ :file dot1l-201.exon.distrib.png :results graphics file
+
+   #+begin_src R :session yes :colnames yes
+     tmp3 <- tmp %>% filter(transcript=="Dot1l-201") %>% 
+       group_by(exon_num, condition) %>% summarise(totalcells=sum(ncells))
+     tmp3
+   #+end_src
+
+   #+RESULTS:
+   | exon_num | condition | totalcells |
+   |----------+-----------+------------|
+   |        4 | C817      |          1 |
+   |       27 | C817      |          1 |
+   |       27 | K813      |          1 |
+   |       27 | K814      |          4 |
+   |       28 | C817      |        426 |
+   |       28 | K813      |        375 |
+   |       28 | K814      |        470 |
+
+
+   #+begin_src R :session yes :file cells_reads.distrib4.png :results graphics file
+     tmp3 %>% ggplot(aes(x=exon_num, y=totalcells, fill=condition)) +
+           geom_bar(position='dodge2',stat='identity') +
+           xlab("Transcript_Exon Name") +
+           ggtitle("Cells mapped to transcript Dot1l-201, an exon specific view") +
+           scale_y_continuous(name="Number of Cells", breaks=seq(0,500,50))
+
+       #%>%
+       #ggplot(aes(transcript, ncells, colour=condition)) + 
+       #geom_point(position=position_dodge(width=0.7), aes(group=condition)) + 
+       #scale_y_continuous(name="Frequency of Cells", breaks=c(0,5,10, seq(10,50,10)))
+
+
+   #+end_src
+
+   #+RESULTS:
+   [[file:cells_reads.distrib4.png]]
+
+
+   
