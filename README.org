@@ -319,7 +319,7 @@ Yes, this is a confusing plot and should be ignored, but it offers an explanatio
 
    Here Dot1l-201 appears to be the most represented transcript just from Exon28 alone (top). However if we exclude that particular exon and look at the others (bottom), we see that Dot1L-201 appears to be more represented in K814 than others (4 vs 1 and 1), and that Dot1L-203 appears to be the second most represented transcript (3-3-1). 
 
-* Plot 5: The total cells that mapped to each Dot1l-201 (Canonical Transcript) exon
+* Plot5: The total cells that mapped to each Dot1l-201 (Canonical Transcript) exon
 
    If we look at our first plot we see that Dot1l-201 is the most populated transcript (most likely because it is the canonical transcript). Let's see how many cells map to which specific exon's of that transcript.
 
