@@ -8,13 +8,23 @@ Here we re-examine the individual exon-level mappings
   #+begin_src R
     library(ggplot2)
     library(gridExtra)
+    library(dplyr)
     tab <- read.table('./results.csv', header=T, sep = ',', row.names = 1)
 
-    # First four characters === condition
-    tab$condition <- substr(tab$matrix, start=1, stop=4)
+    ## First four characters === condition
+    tab$condition <- as.factor(substr(tab$matrix, start=1, stop=4))
+    tab$transcript <- as.factor(sapply(strsplit(tab$exon, split="_"), function(x){x[[1]]}))
+    tab$exonNum <- as.factor(sapply(strsplit(tab$exon, split="_"), function(x){as.integer(x[[2]])}))
 
-    ## sort(unique(sort(tab$exon)))
-    ## - a custom sort function is silly, let's just list the desired order
+    ## First Plot shows how many cells for each condition, grouped by transcript
+    t1.cells <- tab %>% group_by(transcript, condition) %>% summarise(totalcells=sum(ncells))
+    t1.cells %>% ggplot(aes(x=transcript, y=totalcells, fill=condition)) +
+      geom_bar(position='dodge2',stat='identity') +
+      xlab("Total Cells") +
+      ggtitle("Number of Cells Mapped to Transcript") +
+      scale_y_continuous(name="Transcript Name", breaks=seq(0,500,50))
+
+
     xlabels = c('Dot1l-201_4', 'Dot1l-201_27', 'Dot1l-201_28', 'Dot1l-203_2', 'Dot1l-204_3', 'Dot1l-205_5')
 
     margins = margin(1, 0, 1, 0, "cm")
