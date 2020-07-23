@@ -28,6 +28,9 @@ Not for export, we redefine the html image function to embed all images in-house
       ))
 #+end_src
 
+#+RESULTS:
+: org-html--format-image
+
 
 * Get Data
 
