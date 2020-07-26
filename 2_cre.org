@@ -284,7 +284,7 @@ The aim here is to measure CRE recombinase expression by mapping the FASTQ batch
    We will map to both sequences and compare. Who knows, maybe it's useful?
 
 
-* Compute Matrices
+* Compute Matrices (Attempt 1)
 
 ** Galaxy Pipeline
 
@@ -684,13 +684,40 @@ The aim here is to measure CRE recombinase expression by mapping the FASTQ batch
 
    The issue could therefore be the barcodes. Maybe UMI_CB order of the demultiplexing was actually CB_UMI. Let's re-run the Galaxy pipeline, this time switching around the cellbarcodes and UMIs.
 
+   From the [[https://umi-tools.readthedocs.io/en/latest/reference/extract.html#barcode-extraction][UMI-tools reference]] they given an example that if the barcode extraction pattern is =NNNNCC= (where N is UMI, and C is barcode), then a FASTA sequence like
 
-* Compute Matrices (Again)
+   #+begin_src conf
+     @HISEQ:87:00000000 read1
+     AAGGTTGCTGATTGGATGGGCTAG
+     +
+     DA1AEBFGGCG01DFH00B1FF0B
+   #+end_src
+
+   would be extracted to
+
+   #+begin_src conf
+     @HISEQ:87:00000000_TT_AAGG read1
+     GCTGATTGGATGGGCTAG
+     +
+     1AFGGCG01DFH00B1FF0B
+   #+end_src
+
+   Where you can see that the cell barcode is at the beginning (TT) followed by the UMI (AAGG)
+
+   This is different from what I did because I thought the UMI came first (as it does in the actual read).
+
+
+
+* Compute Matrices (Attempt 2)
 
   This time we tweak the AWK step so that cell barcodes come first followed by the UMIs in the read headers.
 
-  We don't actually need to recompute everything again, but instead can pull all the "Text transformation *" datasets, and perform the awk computation locally.
+  We don't actually need to recompute everything again, but instead can pull all the "Text transformation " datasets, and perform the awk computation locally. But for reproducibility I will recompute all, so I tweaked the pipeline and now the new one to be used is called *CRE recombinase count Fixed*.
 
+  I will run this overnight and repeat the quantification steps above. The AddGene histories have the prefix "Adrian Salas AddGene Matrices", and the NCBI histories have the prefix "Adrian Salas NCBI Matrices".
+
+
+** TODO Quickly test if the same reads are gotten for the same datasets
 ** TODO Compute these new matrices
 
 
