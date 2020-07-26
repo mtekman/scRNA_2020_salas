@@ -514,3 +514,188 @@ The aim here is to measure CRE recombinase expression by mapping the FASTQ batch
     #+end_example
 
 
+
+
+
+* Reformat Matrices
+
+  Prepend the matrix name before the cell barcodes in each file, and then concatenate into one giant table.
+
+  #+NAME: bigmatrix
+  #+begin_src bash :var dirname="addgene"
+   echo -e "Matrix\tCellBarcode\tCount" > ${dirname}.tsv
+   for dataset in $dirname/*.tsv; do
+       dirn=$(dirname $dataset)
+       fnam=$(echo $dataset | sed -r 's|.*/[0-9]+_([KC][0-9]+)\.tsv|\1|')
+       cat $dataset | sed "s|^|$fnam\t|" >> ${dirname}.tsv
+   done
+  #+end_src
+
+** AddGene
+
+   #+CALL: bigmatrix(dirname="addgene")
+
+   #+RESULTS:
+
+** NCBI
+
+   #+CALL: bigmatrix(dirname="ncbi")
+
+   #+RESULTS:
+
+** Merge Matrices
+
+   Here we merge the AddGene and the NCBI annotations based on their common =matrix_cellbarcode= identifiers. Let's do this in R to see how much overlap there is between the matrices we have computed here, and the metadata file given by Adrian.
+
+   #+begin_src R :session rare
+     library(dplyr)
+
+     readin <- function(name){
+       res <- read.table(name, header=T)
+       cnams <- paste(res$Matrix, res$CellBarcode, sep="--")
+       res$key <- cnams
+       return(data.frame(library=res$Matrix,
+                         barcode=res$CellBarcode,
+                         ##key=cnams,
+                         count=res$Count))
+     }
+
+     numUniq <- function(vect){
+       length(unique(sort(vect)))
+     }
+
+     overlapUniq <- function(v1, v2, names=FALSE){
+       if (names){
+         paste(unique(v1)[unique(v1) %in% unique(v2)], collapse=" ")
+       } else {
+         sum(unique(v1) %in% unique(v2))
+       }
+     }
+
+     addgene <- readin('addgene.tsv')
+     ncbi <- readin('ncbi.tsv')
+     ## load adrians metadata object
+     adrians <- readRDS('~/Downloads/metadata_sc_RaceID.RDS')
+
+   #+end_src
+
+   #+RESULTS:
+
+
+   Print some stats on the overlap
+
+   #+begin_src R :session rare :results output
+     print(sprintf("Libraries [Adrians, AddGene, NCBI]: %d, %d, %d",
+                   numUniq(adrians$library),
+                   numUniq(addgene$library),
+                   numUniq(ncbi$library)))
+     print(sprintf("Cells [Adrians, AddGene, NCBI]: %d, %d, %d",
+                   length(adrians$library),
+                   length(addgene$library),
+                   length(ncbi$library)))
+     print(sprintf("Overlap Libraries [Adrians, AddGene]: %d",
+                   overlapUniq(adrians$library, addgene$library)))
+     print(sprintf("Overlap Libraries [Adrians, NCBI]: %d", 
+                   overlapUniq(adrians$library, ncbi$library)))
+     print(sprintf("Overlap Libraries [AddGene, NCBI]: %d", 
+                   overlapUniq(addgene$library, ncbi$library)))
+
+     adrians.mat <- paste(adrians$library, adrians$barcode, sep="_")
+     addgene.mat <- paste(addgene$library, addgene$barcode, sep="_")
+     ncbi.mat <- paste(ncbi$library, ncbi$barcode, sep="_")
+
+     print(sprintf("Overlap [Adrians, AddGene]: %d (%s)",
+                   overlapUniq(adrians.mat, addgene.mat, names=F),
+                   overlapUniq(adrians.mat, addgene.mat, names=T)))
+     print(sprintf("Overlap [Adrians, NCBI]: %d (%s)",
+                   overlapUniq(adrians.mat, ncbi.mat),
+                   overlapUniq(adrians.mat, ncbi.mat, names=T)))
+     print(sprintf("Overlap [AddGene, NCBI]: %d (%s)",
+                   overlapUniq(addgene.mat, ncbi.mat),
+                   overlapUniq(addgene.mat, ncbi.mat, names=T)))
+   #+end_src
+
+   #+RESULTS:
+   : [1] "Libraries [Adrians, AddGene, NCBI]: 46, 43, 28"
+   : [1] "Cells [Adrians, AddGene, NCBI]: 3701, 225, 183"
+   : [1] "Overlap Libraries [Adrians, AddGene]: 43"
+   : [1] "Overlap Libraries [Adrians, NCBI]: 28"
+   : [1] "Overlap Libraries [AddGene, NCBI]: 28"
+   : [1] "Overlap [Adrians, AddGene]: 5 (C81711_CTAAGC K81333_TGTCTG K81413_ACCAAC K81342_GTATGC C81711_TGGTGA)"
+   : [1] "Overlap [Adrians, NCBI]: 1 (K81432_GCTCTA)"
+   : [1] "Overlap [AddGene, NCBI]: 0 ()"
+
+   This is weird. So the NCBI matrix had most of the CRE counts in the K matrices, leading me to believe that it was the correct one, but yet there is very little overlap between the cells specified in Adrian's matrix and the NCBI one (or even the AddGene one).
+
+   For example, if we look at the top counts in the NCBI matrix
+
+   #+begin_src R :session rare :colnames yes
+     tail(ncbi[order(ncbi$count),], 3)
+   #+end_src
+
+   #+RESULTS:
+   | library | barcode | count |
+   |---------+---------+-------|
+   | K81423  | ATGAAC  |     9 |
+   | K81343  | GGTGGC  |     9 |
+   | K81411  | GGATGT  |    12 |
+
+   and the top counts in the AddGene matrix
+
+   #+begin_src R :session rare :colnames yes
+     tail(addgene[order(addgene$count),], 3)
+   #+end_src
+
+   #+RESULTS:
+   | library | barcode | count |
+   |---------+---------+-------|
+   | C81734  | TGTAAC  |    10 |
+   | C81711  | TGGTGA  |    11 |
+   | K81424  | TTCTGA  |    15 |
+
+   We see *none* of these cells in Adrian's matrix
+
+   #+begin_src R :session rare :colnames yes
+     lib.bar <- function(library, barcode){
+       adrians[adrians$library == library & adrians$barcode == barcode,]
+     }
+
+     print("NCBI")
+     lib.bar("K81423", "ATGAAC")
+     lib.bar("K81343", "GGTGGC")
+     lib.bar("K81411", "GGATGT")
+     print("AddGene")
+     lib.bar("C81734", "TGTAAC")
+     lib.bar("C81711", "TGGTGA")
+     lib.bar("K81424", "TTCTGA")
+
+   #+end_src
+
+   #+RESULTS:
+   | library | cellNumber | barcode | cluster | cell | cluster_extended |
+   |---------+------------+---------+---------+------+------------------|
+
+
+** What is going on?
+
+   3701 cells in Adrian's matrix, with only 1 (NCBI) or 5 (AddGene) cells overlapping them from my matrices.
+
+   There definitely appears to be differential expression of CRE in the NCBI matrix between cases and controls (i.e. no cells in the controls expressed CRE, whereas many in the cases did), but apparently the cells in the NCBI matrix do not overlap with the barcodes in Adrians.
+
+   The issue could therefore be the barcodes. Maybe UMI_CB order of the demultiplexing was actually CB_UMI. Let's re-run the Galaxy pipeline, this time switching around the cellbarcodes and UMIs.
+
+
+* Compute Matrices (Again)
+
+  This time we tweak the AWK step so that cell barcodes come first followed by the UMIs in the read headers.
+
+  We don't actually need to recompute everything again, but instead can pull all the "Text transformation *" datasets, and perform the awk computation locally.
+
+** TODO Compute these new matrices
+
+
+
+
+
+
+
