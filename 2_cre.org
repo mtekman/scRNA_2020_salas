@@ -256,7 +256,7 @@ The aim here is to measure CRE recombinase expression by mapping the FASTQ batch
   #+end_src
 
 
-** Enterobacteria Phage P1
+** NCBI
 
    This is the one that Adrian sent in an email from [[https://www.ncbi.nlm.nih.gov/nuccore/NC_005856.1?report=fasta&from=436&to=1467][NCBI]]:
 
@@ -292,8 +292,7 @@ The aim here is to measure CRE recombinase expression by mapping the FASTQ batch
 
   We use =umi-tools extract= for the demultiplexing, =HISAT2= for mapping, =umi-tools deduplicate= for the deduplication, and then the above awk script to perform the quantification.
 
-  #+DOWNLOADED: file:///home/tetris/Downloads/Screenshot_2020-07-26%20Galaxy%20Europe%20Workflow%20Editor.png @ 2020-07-26 12:16:54
-  [[file:Making_a_Galaxy_Pipeline/2020-07-26_12-16-54_Screenshot_2020-07-26%20Galaxy%20Europe%20Workflow%20Editor.png]]
+  [[file:imgs/pipeline.png]]
 
 ** Inputs
 
@@ -316,7 +315,7 @@ The aim here is to measure CRE recombinase expression by mapping the FASTQ batch
    #+begin_src python :session yes :results output
      from bioblend import galaxy
      # Get this from https://usegalaxy.eu/user/api_key
-     your_api_key = "5e8f7994e74c7a0e086f91e403c6bd82"
+     your_api_key = "BLAHBLAH"
      # Make sure this directory exists
      output_directory = "output"
      gi = galaxy.GalaxyInstance(url="https://usegalaxy.eu", key=your_api_key)
@@ -733,27 +732,24 @@ The aim here is to measure CRE recombinase expression by mapping the FASTQ batch
      Column 1 and 3 have the same reads, and so do 2 and 4 as expected.
      The count matrices are different with the newer matrix in 1 having a cell with 13 counts compared to the column 3 matrix.
 
-     #+DOWNLOADED: file:///home/tetris/Downloads/Screenshot_2020-07-27%20Galaxy%20Europe%20Histories(4).png @ 2020-07-27 12:38:54
-     [[file:Compute_Matrices_(Attempt_2)/2020-07-27_12-38-54_Screenshot_2020-07-27%20Galaxy%20Europe%20Histories(4).png]]
+     [[file:imgs/dataset140.png]]
 
 **** Dataset 128
 
      Column 1 and 3 have the same reads, and so do 2 and 4 as expected. The count matrices are different as expected.
 
-     #+DOWNLOADED: file:///home/tetris/Downloads/Screenshot_2020-07-27%20Galaxy%20Europe%20Histories(2).png @ 2020-07-27 12:29:52
-     [[file:Compute_Matrices_(Attempt_2)/2020-07-27_12-29-52_Screenshot_2020-07-27%20Galaxy%20Europe%20Histories(2).png]]
+     [[file:imgs/dataset128.png]]
 
 
 **** Dataset 116
 
      Column 1 and 3 have the same reads, and so do 2 and 4 as expected. The count matrices are different as expected.
 
-     #+DOWNLOADED: file:///home/tetris/Downloads/Screenshot_2020-07-27%20Galaxy%20Europe%20Histories(3).png @ 2020-07-27 12:30:02
-     [[file:Compute_Matrices_(Attempt_2)/2020-07-27_12-30-02_Screenshot_2020-07-27%20Galaxy%20Europe%20Histories(3).png]]
+     [[file:imgs/dataset116.png]]
 
 **** Conclusion
 
-     From the 3 datasets I chose, their extracted and deduplicated reads are the same (Columns 1 + 3, Columns 2 + 4) but the count matrices are different due to the awk script being tweaked to count the actual cell barcodes and not the 
+     From the 3 datasets I chose, their extracted and deduplicated reads are the same (Columns 1 + 3, Columns 2 + 4) but the count matrices are different due to the awk script being tweaked to count the actual cell barcodes (not the UMIs as before).
 
 
 ** Compute these new matrices
@@ -993,17 +989,43 @@ The aim here is to measure CRE recombinase expression by mapping the FASTQ batch
 
 * Summary    
 
-  Two "CRE recombinase" transcripts were annotated to the matrix that Adrian provided. One transcript was obtained from the AddGene site, and the other was from NCBI (as provided by Adrian).
+  Galaxy was used to map and quantify the expression of the CRE recombinase, using HISAT2 and awk. The input datasets are [[https://usegalaxy.eu/u/mehmet-tekman/h/adrian-salas-datasets][hosted on Galaxy here]], and the workflow to generate the analysis is [[https://usegalaxy.eu/u/mehmet-tekman/w/cre-recombinase-count-fixed][hosted on Galaxy here]]. The output matrix is attached with this report under the name =metadata_sc_RaceID.CREannotation.RDS=, and it is also hosted at the [[https://github.com/mtekman/scRNA_2020_salas/][GitHub repository]] for this notebook.
 
-  The AddGene expression is contained within the =count.addgene= column in the output matrix, and the NCBI expression is contained within the =count.ncbi= column in the output matrix.
+  Two "CRE recombinase" transcripts were annotated to the input metadata matrix that Adrian provided. One transcript was obtained from the [[https://www.addgene.org/62730/sequences/][AddGene]] site (found via a web search for "CRE recombinase sequence"), and the other was from [[https://www.ncbi.nlm.nih.gov/nuccore/NC_005856.1?report=fasta&from=436&to=1467][NCBI]] as provided by Adrian in an email exchange. As a result much of the above analysis talks about two sets of expression matrices; "AddGene" and "NCBI".
 
-  The =count.ncbi= column *is the column that expresses the CRE recombinase*. You can ignore the the =count.addgene= slot.
+  The expression from the AddGene matrices is contained within the =count.addgene= column in the output matrix, and the NCBI expression is contained within the =count.ncbi= column in the output matrix. The =count.ncbi= column *is the column that expresses the CRE recombinase*. You can ignore the the =count.addgene= slot, it was included in the offhand chance that it could be useful.
 
-  The cells which expressed the AddGene transcripts were indiscriminant across cells, I'm not sure what they measure and should be ignored.
+  The cells which expressed the NCBI transcript were expressed only in the K8[0-9]+ libraries (the cases). In total 144 cells with non-zero expression were recorded, of which 141 intersected with Adrian's existing matrix.
 
-  The cells which expressed NCBI were expressed only in the K8[0-9]+ (cases) libraries, and in 144 cells of which 141 intersected with Adrian's existing matrix.
 
-  Attached is the =metadata_sc_RaceID.CREannotation.RDS= matrix.  
+
+* Variables :noexport:
+
+Not for export, we redefine the html image function to embed all images in-house
+
+#+begin_src elisp
+  (defun replace-in-string (what with in)
+    (replace-regexp-in-string (regexp-quote what) with in nil 'literal))
+
+  (defun org-html--format-image (source attributes info)
+    (progn
+      (setq source (replace-in-string "%20" " " source))
+      (format "<img src=\"data:image/%s;base64,%s\"%s />"
+              (or (file-name-extension source) "")
+              (base64-encode-string
+               (with-temp-buffer
+                 (insert-file-contents-literally source)
+                (buffer-string)))
+              (file-name-nondirectory source))
+      ))
+#+end_src
+
+#+RESULTS:
+: org-html--format-image
+
+
+
+
 
 
 

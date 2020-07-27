@@ -7,12 +7,19 @@
 
 As per the official email, we have three deliverables:
 
-  1. Explain the Dot1L plots
+* DONE 1. Explain the Dot1L plots
+  CLOSED: [2020-07-23 Do 15:58]
 
-     These turned out to be a plot of cell count distributions, which was virtually unreadable before. I have since updated it to more meaningful metrics. [[file:1_plots.org][Notebook is here]].
+  These turned out to be a plot of cell count distributions, which was virtually unreadable before. I have since updated it to more meaningful metrics. [[file:1_plots.org][Notebook is here]].
 
-  2. Append CRE recombinase expression to cells
+* DONE 2. Append CRE recombinase expression to cells
+  CLOSED: [2020-07-27 Mo 15:58]
+  
+  Galaxy was used to map the cell reads against the transcriptome of the CRE transcript; two were used, one from NCBI and one from AddGene. The NCBI matrices detected CRE expression only in the K matrices, which was good. 141 cells were annotated to the metadata matrix that adrian provided. [[file:2_cre.org][Notebook is here]].
 
-     Galaxy was used to map the cell reads against the transcriptome of the CRE transcript; two were used, one from NCBI and one from AddGene. The NCBI matrices detected CRE expression only in the K matrices, which was good. However there was virtually no overlap between Adrian's data matrix of 3701 cells he uses for his analysis, and the 183 CRE cells in the NCBI matrix.
 
-     Currently investigating if this is due to an UMI and CB mixup during the AWK stage of demultiplexing. [[file:2_cre.org][Notebook is here]].
+* DOING 3. Perform WCGNA analysis
+
+  Working on it.
+
+     
