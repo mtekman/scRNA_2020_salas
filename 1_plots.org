@@ -40,7 +40,7 @@ Not for export, we redefine the html image function to embed all images in-house
     library(ggplot2)
     library(gridExtra)
     library(dplyr)
-    tab <- read.table('./results.csv', header=T, sep = ',', row.names = 1)
+    tab <- read.table('files/1_plots/results.csv', header=T, sep = ',', row.names = 1)
 
     ## First four characters === condition
     tab$condition <- as.factor(substr(tab$matrix, start=1, stop=4))

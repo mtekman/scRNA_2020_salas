@@ -408,7 +408,7 @@ The aim here is to measure CRE recombinase expression by mapping the FASTQ batch
 
     The AddGene histories all start with "CRE recombinase Count on "
 
-    #+CALL: downloaddatasets(outdir="addgene", histprefix="CRE recombinase Count on ")
+    #+CALL: downloaddatasets(outdir="files/2_cre/addgene", histprefix="CRE recombinase Count on ")
 
     #+RESULTS:
     #+begin_example
@@ -465,7 +465,7 @@ The aim here is to measure CRE recombinase expression by mapping the FASTQ batch
 
     The NCBI histories all start with "CRE Salas Email Count on "
 
-    #+CALL: downloaddatasets(outdir="ncbi", histprefix="CRE Salas Email Count on ")
+    #+CALL: downloaddatasets(outdir="files/2_cre/ncbi", histprefix="CRE Salas Email Count on ")
 
     #+RESULTS:
     #+begin_example
@@ -536,13 +536,13 @@ The aim here is to measure CRE recombinase expression by mapping the FASTQ batch
 
 *** AddGene
 
-    #+CALL: bigmatrix(dirname="addgene")
+    #+CALL: bigmatrix(dirname="files/2_cre/addgene")
 
     #+RESULTS:
 
 *** NCBI
 
-    #+CALL: bigmatrix(dirname="ncbi")
+    #+CALL: bigmatrix(dirname="files/2_cre/ncbi")
 
     #+RESULTS:
 
@@ -576,10 +576,10 @@ The aim here is to measure CRE recombinase expression by mapping the FASTQ batch
         }
       }
 
-      addgene <- readin('addgene.tsv')
-      ncbi <- readin('ncbi.tsv')
+      addgene <- readin('files/2_cre/addgene.tsv')
+      ncbi <- readin('files/2_cre/ncbi.tsv')
       ## load adrians metadata object
-      adrians <- readRDS('~/Downloads/metadata_sc_RaceID.RDS')
+      adrians <- readRDS('files/2_cre/metadata_sc_RaceID.RDS')
 
     #+end_src
 
@@ -819,7 +819,7 @@ The aim here is to measure CRE recombinase expression by mapping the FASTQ batch
 
 **** AddGene
 
-     #+CALL: downloaddatasets(outdir="addgene", histprefix="Adrian Salas AddGene Matrices on ")
+     #+CALL: downloaddatasets(outdir="files/2_cre/addgene", histprefix="Adrian Salas AddGene Matrices on ")
 
      #+RESULTS:
      #+begin_example
@@ -873,7 +873,7 @@ The aim here is to measure CRE recombinase expression by mapping the FASTQ batch
 
 **** NCBI
 
-     #+CALL: downloaddatasets(outdir="ncbi", histprefix="Adrian Salas NCBI Matrices on ")
+     #+CALL: downloaddatasets(outdir="files/2_cre/ncbi", histprefix="Adrian Salas NCBI Matrices on ")
 
      #+RESULTS:
      #+begin_example
@@ -984,7 +984,7 @@ The aim here is to measure CRE recombinase expression by mapping the FASTQ batch
       ## now we replace the NA's with 0's
       tab2[is.na(tab2)] <- 0
       ## and save
-      saveRDS(tab2, file="metadata_sc_RaceID.CREannotation.RDS")
+      saveRDS(tab2, file="files/2_cre/metadata_sc_RaceID.CREannotation.RDS")
     #+end_src
 
 * Summary    
