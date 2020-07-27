@@ -716,8 +716,38 @@ The aim here is to measure CRE recombinase expression by mapping the FASTQ batch
 
   I will run this overnight and repeat the quantification steps above. The AddGene histories have the prefix "Adrian Salas AddGene Matrices", and the NCBI histories have the prefix "Adrian Salas NCBI Matrices".
 
+*** Quickly test if the same reads are gotten for the same datasets
 
-** TODO Quickly test if the same reads are gotten for the same datasets
+    I will pick 3 random datasets and visually compare their extracted reads across histories.
+
+**** Dataset 140
+
+     Column 1 and 3 have the same reads, and so do 2 and 4 as expected.
+     The count matrices are different with the newer matrix in 1 having a cell with 13 counts compared to the column 3 matrix.
+
+     #+DOWNLOADED: file:///home/tetris/Downloads/Screenshot_2020-07-27%20Galaxy%20Europe%20Histories(4).png @ 2020-07-27 12:38:54
+     [[file:Compute_Matrices_(Attempt_2)/2020-07-27_12-38-54_Screenshot_2020-07-27%20Galaxy%20Europe%20Histories(4).png]]
+
+**** Dataset 128
+
+     Column 1 and 3 have the same reads, and so do 2 and 4 as expected. The count matrices are different as expected.
+
+     #+DOWNLOADED: file:///home/tetris/Downloads/Screenshot_2020-07-27%20Galaxy%20Europe%20Histories(2).png @ 2020-07-27 12:29:52
+     [[file:Compute_Matrices_(Attempt_2)/2020-07-27_12-29-52_Screenshot_2020-07-27%20Galaxy%20Europe%20Histories(2).png]]
+
+
+**** Dataset 116
+
+     Column 1 and 3 have the same reads, and so do 2 and 4 as expected. The count matrices are different as expected.
+
+     #+DOWNLOADED: file:///home/tetris/Downloads/Screenshot_2020-07-27%20Galaxy%20Europe%20Histories(3).png @ 2020-07-27 12:30:02
+     [[file:Compute_Matrices_(Attempt_2)/2020-07-27_12-30-02_Screenshot_2020-07-27%20Galaxy%20Europe%20Histories(3).png]]
+
+**** Conclusion
+
+     From the 3 datasets I chose, their extracted and deduplicated reads are the same (Columns 1 + 3, Columns 2 + 4) but the count matrices are different due to the awk script being tweaked to count a different cell column
+
+
 ** TODO Compute these new matrices
 
 
