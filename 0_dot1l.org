@@ -1,0 +1,471 @@
+#+TITLE: Salas 2020 Dot1L Data
+#+SETUPFILE: https://fniessen.github.io/org-html-themes/setup/theme-readtheorg.setup
+#+PROPERTY: header-args :exports both :eval never-export
+#+OPTIONS: H:4 num:nil toc:5
+#+EXCLUDE_TAGS: noexport
+#+AUTHOR: Mehmet Tekman
+
+We extract the Dot1L data produced by the Galaxy matrices (with histories name /Adrian Salas exon-level Datasets Results/)
+
+Here we download and fix the transcript names to give proper names, as well as retaining their barcodes.
+
+We will then merge all these matrices/libraries into the same file with columns of:
+
+ 1. Library
+ 2. CellBarcode
+ 3. Dot1L Isoform Total
+ 4. Dot1L Isoform Specific Exon ...
+ 5. Dot1L Isoform Specific Exon ...
+ 6. Dot1L Isoform Specific Exon ...
+
+The number of columns for "Dot1L Isoform Specific Exon" can be determined in advance, and I anticipate no more than 10.
+
+* Download Datasets
+
+   #+NAME: setupenv
+   #+begin_src python :session yes
+     # load env
+     import subprocess
+     activate_this_file = "/home/tetris/.bioblend/bin/activate_this.py"
+     f=open(activate_this_file, 'r')
+     exec(f.read(), dict(__file__=activate_this_file))
+   #+end_src
+
+
+   #+NAME: connect
+   #+begin_src python :session yes :results output
+     from bioblend import galaxy
+     # Get this from https://usegalaxy.eu/user/api_key
+     your_api_key = "2d71b7d06551df0023446673f8ed202a"
+     # Make sure this directory exists
+     output_directory = "output"
+     gi = galaxy.GalaxyInstance(url="https://usegalaxy.eu", key=your_api_key)
+     dclient = galaxy.datasets.DatasetClient(gi)
+     hl = gi.histories.get_histories()
+     hclient = galaxy.histories.HistoryClient(gi)
+     history = [lip for lip in hl if lip['name'] == "Adrian Salas exon-level Datasets Results"][0]
+     tab = hclient.show_matching_datasets(history['id'], "\d+_[CK].*\.tsv")
+     hid_name = {x['id']:x['name'] for x in tab}
+     print("ID\tName")
+     for hid in sorted(hid_name.keys()):
+         print(hid, hid_name[hid], sep="\t")
+   #+end_src
+
+   #+CALL: setupenv()
+
+   #+CALL: connect()
+
+   #+RESULTS:
+   #+begin_example
+   ID	Name
+   11ac94870d0bb33a08ab8c8c7f7af92f	59_C81713.tsv
+   11ac94870d0bb33a0bce87b055ba29eb	92_K81443.tsv
+   11ac94870d0bb33a1515aa47a57c9d48	26_K81331.tsv
+   11ac94870d0bb33a1699cb72b25a81dc	77_K81412.tsv
+   11ac94870d0bb33a214ce5ac983bd768	125_K81323.tsv
+   11ac94870d0bb33a236bb63fba253b55	50_C81744.tsv
+   11ac94870d0bb33a26502797fde90c76	5_C81721.tsv
+   11ac94870d0bb33a2838712dee0ede31	140_K81434.tsv
+   11ac94870d0bb33a3038b12a37ca9cb4	98_C81731.tsv
+   11ac94870d0bb33a309588e381c1ab1f	113_K81313.tsv
+   11ac94870d0bb33a377fb2c1425c163c	122_K81322.tsv
+   11ac94870d0bb33a3cd9fd200509320e	11_C81723.tsv
+   11ac94870d0bb33a416ac0eb61b5469f	35_K81334.tsv
+   11ac94870d0bb33a45699a3122f3d5a8	80_K81413.tsv
+   11ac94870d0bb33a4872261a24d65bd6	62_C81714.tsv
+   11ac94870d0bb33a4ae7791dca36c3f2	104_C81733.tsv
+   11ac94870d0bb33a4da7354419962cc7	8_C81722.tsv
+   11ac94870d0bb33a5fb8a55879db575e	86_K81441.tsv
+   11ac94870d0bb33a618f70279c141126	134_K81432.tsv
+   11ac94870d0bb33a63623bd8d5b39f28	44_K81423.tsv
+   11ac94870d0bb33a6b5e50b5a3cc66aa	53_C81711.tsv
+   11ac94870d0bb33a6c06bc33a85bced1	74_K81411.tsv
+   11ac94870d0bb33a6e31436bd7cfd76f	56_C81712.tsv
+   11ac94870d0bb33a84cd40e8b89107c6	89_K81442.tsv
+   11ac94870d0bb33a869c1fdb1507269a	131_K81431.tsv
+   11ac94870d0bb33a8c36576d15aeba8d	20_C81742.tsv
+   11ac94870d0bb33a8e1bc5eef3d97076	47_K81424.tsv
+   11ac94870d0bb33a9833137a21853e3e	107_C81734.tsv
+   11ac94870d0bb33aab07f7ea38c0a8c3	17_C81741.tsv
+   11ac94870d0bb33aada22b7211866416	83_K81414.tsv
+   11ac94870d0bb33aaf4ba68adc442d98	14_C81724.tsv
+   11ac94870d0bb33ab331ec65cb48c1be	68_K81342.tsv
+   11ac94870d0bb33ab3466c3e4665f92a	65_K81341.tsv
+   11ac94870d0bb33ab3c97a021a6dc49d	23_C81743.tsv
+   11ac94870d0bb33ab4ef7510964b2c20	95_K81444.tsv
+   11ac94870d0bb33ac07cd43f779063a4	137_K81433.tsv
+   11ac94870d0bb33aca2ad48558cc81e1	110_K81312.tsv
+   11ac94870d0bb33acc84b1b3f1b4f34d	71_K81343.tsv
+   11ac94870d0bb33ad42332c2ed7e8ccf	32_K81333.tsv
+   11ac94870d0bb33ad677d451d4acefcc	119_K81321.tsv
+   11ac94870d0bb33ada259755616a176f	41_K81422.tsv
+   11ac94870d0bb33ae0dd2d249f184f90	38_K81421.tsv
+   11ac94870d0bb33ae8409dbb399a07d3	29_K81332.tsv
+   11ac94870d0bb33aed8838fe28bfab01	128_K81324.tsv
+   11ac94870d0bb33aee7a275d9eabf7e5	116_K81314.tsv
+   11ac94870d0bb33af49626f6c7f7fd3a	101_C81732.tsv
+   #+end_example
+
+    #+NAME:downloaddatasets
+    #+begin_src python :session yes :var outdir="matrices" :results output verbatim
+      import os
+      os.mkdir(outdir)
+      for id in hid_name:
+          dclient.download_dataset(id, file_path="%s/%s" % (outdir, hid_name[id]),      
+                                   use_default_filename=False)
+    #+end_src
+
+    #+RESULTS: downloaddatasets
+
+    Also we'll download the GTF file  
+
+    #+begin_src python :session yes :var outdir="matrices" :results output verbatim
+      did = hclient.show_matching_datasets(history['id'], "gencode.vM23.annotation.gtf.gz")[0]['id']
+      dclient.download_dataset(did, file_path="%s/%s" % (outdir, "gencode.vM23.annotation.gtf.gz"),
+                               use_default_filename=False)
+    #+end_src
+
+    #+RESULTS:
+    
+    Let's map out the GTf file
+
+    #+begin_src python :session yes
+      mapped = {}
+      with open("matrices/gencode.vM23.annotation.gtf.gz", 'r') as gtf:  ## it's actually plaintext
+          for line in gtf:
+              if line[0] != '#':
+                  j,j,j,j,j,j,j,j,stuff = line.split('\t')
+                  iterable = list(p.strip().split(' ') for p in stuff.split(';'))
+                  gene_id = None; gene_name = None; exon_id = None; exon_number = None; transcript_name = None
+                  for a in iterable:
+                      if len(a)!=2:
+                          continue
+                      x = a[0]
+                      y = a[1]
+                      if x=="exon_id":exon_id = y.split('"')[1]
+                      elif x=="exon_number":exon_number = int(y)
+                      elif x=="gene_id":gene_id = y.split('"')[1]
+                      elif x=="gene_name":gene_name = y.split('"')[1]
+                      elif x=="transcript_name":transcript_name = y.split('"')[1]
+                      #else:print("No annotation found!", iterable)
+                  if exon_id:
+                      if exon_id not in mapped:
+                          mapped[exon_id] = [gene_name, {transcript_name : [exon_number]}]
+                      else:
+                          if gene_name != mapped[exon_id][0]:
+                              print("Different Gene:", exon_id, mapped[exon_id][0], gene_name)
+                          else:
+                              trans_names = mapped[exon_id][1]
+                              if transcript_name not in trans_names:
+                                  mapped[exon_id][1][transcript_name] = [exon_number]
+                              else:
+                                  if exon_number not in mapped[exon_id][1][transcript_name]:
+                                      mapped[exon_id][1][transcript_name].append(exon_number)
+
+
+
+
+
+
+
+    #+end_src
+
+    #+RESULTS:
+
+
+    Just get the Dot1L transcripts
+
+    #+begin_src python :session yes :results output verbatim
+      for x in mapped:
+          if mapped[x][0].startswith("Dot1l"):
+              print(mapped[x])
+    #+end_src
+
+    #+RESULTS:
+    #+begin_example
+    ['Dot1l', {'Dot1l-201': [1]}]
+    ['Dot1l', {'Dot1l-201': [2], 'Dot1l-202': [2]}]
+    ['Dot1l', {'Dot1l-201': [3]}]
+    ['Dot1l', {'Dot1l-201': [4]}]
+    ['Dot1l', {'Dot1l-201': [5]}]
+    ['Dot1l', {'Dot1l-201': [6]}]
+    ['Dot1l', {'Dot1l-201': [7]}]
+    ['Dot1l', {'Dot1l-201': [8], 'Dot1l-206': [1]}]
+    ['Dot1l', {'Dot1l-201': [9], 'Dot1l-206': [2]}]
+    ['Dot1l', {'Dot1l-201': [10], 'Dot1l-206': [3]}]
+    ['Dot1l', {'Dot1l-201': [11], 'Dot1l-206': [4]}]
+    ['Dot1l', {'Dot1l-201': [12], 'Dot1l-206': [5]}]
+    ['Dot1l', {'Dot1l-201': [13], 'Dot1l-206': [6]}]
+    ['Dot1l', {'Dot1l-201': [14], 'Dot1l-206': [7]}]
+    ['Dot1l', {'Dot1l-201': [15], 'Dot1l-206': [8]}]
+    ['Dot1l', {'Dot1l-201': [16], 'Dot1l-206': [9]}]
+    ['Dot1l', {'Dot1l-201': [17], 'Dot1l-206': [10]}]
+    ['Dot1l', {'Dot1l-201': [18], 'Dot1l-206': [11]}]
+    ['Dot1l', {'Dot1l-201': [19], 'Dot1l-206': [12]}]
+    ['Dot1l', {'Dot1l-201': [20], 'Dot1l-206': [13]}]
+    ['Dot1l', {'Dot1l-201': [21], 'Dot1l-206': [14]}]
+    ['Dot1l', {'Dot1l-201': [22], 'Dot1l-206': [15]}]
+    ['Dot1l', {'Dot1l-201': [23], 'Dot1l-206': [16]}]
+    ['Dot1l', {'Dot1l-201': [24], 'Dot1l-206': [17]}]
+    ['Dot1l', {'Dot1l-201': [25], 'Dot1l-206': [18], 'Dot1l-205': [2]}]
+    ['Dot1l', {'Dot1l-201': [26], 'Dot1l-206': [19], 'Dot1l-205': [3]}]
+    ['Dot1l', {'Dot1l-201': [27], 'Dot1l-205': [4]}]
+    ['Dot1l', {'Dot1l-201': [28]}]
+    ['Dot1l', {'Dot1l-202': [1]}]
+    ['Dot1l', {'Dot1l-202': [3]}]
+    ['Dot1l', {'Dot1l-202': [4]}]
+    ['Dot1l', {'Dot1l-202': [5]}]
+    ['Dot1l', {'Dot1l-202': [6]}]
+    ['Dot1l', {'Dot1l-202': [7]}]
+    ['Dot1l', {'Dot1l-202': [8]}]
+    ['Dot1l', {'Dot1l-202': [9]}]
+    ['Dot1l', {'Dot1l-202': [10]}]
+    ['Dot1l', {'Dot1l-202': [11]}]
+    ['Dot1l', {'Dot1l-202': [12]}]
+    ['Dot1l', {'Dot1l-202': [13]}]
+    ['Dot1l', {'Dot1l-202': [14]}]
+    ['Dot1l', {'Dot1l-202': [15]}]
+    ['Dot1l', {'Dot1l-202': [16], 'Dot1l-207': [2]}]
+    ['Dot1l', {'Dot1l-202': [17]}]
+    ['Dot1l', {'Dot1l-202': [18]}]
+    ['Dot1l', {'Dot1l-202': [19]}]
+    ['Dot1l', {'Dot1l-202': [20]}]
+    ['Dot1l', {'Dot1l-202': [21]}]
+    ['Dot1l', {'Dot1l-202': [22]}]
+    ['Dot1l', {'Dot1l-202': [23]}]
+    ['Dot1l', {'Dot1l-202': [24]}]
+    ['Dot1l', {'Dot1l-204': [1]}]
+    ['Dot1l', {'Dot1l-204': [2]}]
+    ['Dot1l', {'Dot1l-204': [3]}]
+    ['Dot1l', {'Dot1l-206': [20]}]
+    ['Dot1l', {'Dot1l-206': [21]}]
+    ['Dot1l', {'Dot1l-207': [1]}]
+    ['Dot1l', {'Dot1l-207': [3]}]
+    ['Dot1l', {'Dot1l-205': [1]}]
+    ['Dot1l', {'Dot1l-205': [5]}]
+    ['Dot1l', {'Dot1l-205': [6]}]
+    ['Dot1l', {'Dot1l-205': [7]}]
+    ['Dot1l', {'Dot1l-203': [1]}]
+    ['Dot1l', {'Dot1l-203': [2]}]
+    #+end_example
+
+    Fix the names by prepping the matrices
+
+    #+begin_src python :session yes :var indir="matrices" :var outdir="fixed" :results output verbatim
+      os.mkdir(outdir)
+      def parseSingleMatrix(name, matrixname):
+          with open(matrixname, 'r') as matrix:
+              fope=open("%s/%s_fixednames.tsv" % (outdir, name), "w")
+
+              print(fope.name, end=", ")  ## debug
+              print(matrix.readline().replace("\t","\t%s_" % name), file=fope, end="")
+              for mat in matrix:
+                  tokens = mat.split('\t')
+                  name = tokens[0]
+                  ename = mapped[name]
+                  # Flatten names
+                  flatten = [ename[0]]
+                  for tname in ename[1]:
+                      enums = ename[1][tname]
+                      for e in enums:
+                          flatten.append(tname+"_"+str(e))
+                  flatten.append(name)
+
+                  tokens[0] = '|'.join(flatten)
+                  print('\t'.join(tokens), file=fope, end="")
+              fope.close()
+
+      matrices = [indir+"/"+hid_name[x] for x in hid_name]
+      for mat in matrices:
+          title = mat.split("_")[1].split('.')[0]
+          parseSingleMatrix(title, mat)
+
+    #+end_src
+
+    #+RESULTS:
+
+    These matrices contain information about =Gene|Transcript_Exon|ENSExon=
+
+    Let's filter these specifically for =Dot1L= expression.
+
+    #+begin_src python :session yes :var indir="fixed" :var outdir="fixed_dot1l" :results output verbatim    
+      os.mkdir(outdir)
+      def filterSingleMatrix(name, matrixname):
+          with open(matrixname, 'r') as matrix:
+              fope=open("%s/%s_dot1l.tsv" % (outdir, name), "w")
+              print(fope.name, end=", ")  ## debug
+              print(matrix.readline(), file=fope, end="")
+              for line in matrix:
+                  tokens = line.split('\t')
+                  name = tokens[0]
+                  if name.startswith("Dot1l|"):
+                     print(line, end="", file=fope)
+              fope.close()
+
+
+      newmatrices = ["fixed/"+x.split('_')[1].split('.')[0]+"_fixednames.tsv" for x in matrices]
+      for mat in newmatrices:
+          title = mat.split("/")[1].split('.')[0]
+          filterSingleMatrix(title, mat)
+      
+    #+end_src
+
+    #+RESULTS:
+
+    And now flatten the matrices into a table. (Let's pick one matrix and see how we can flatten it)
+
+    #+NAME: processmatricesall
+    #+begin_src R :session rare :var indir="" outdir="" :results output verbatim
+      library(tidyr)
+
+      processMatrix <- function(matfilename, outfilename, outjunkname){
+        tab <- read.table(matfilename, header=T)
+        wideform <- gather(tab, cell, ntrans, 2:ncol(tab))
+        nonzero <- wideform[wideform$ntrans > 0,]
+        ## extract transcript and exon info
+        ##trans.exon <- sapply(nonzero$gene, function(x){strsplit(x, split="\\|")[[1]][2]})
+        trans.exon <- sapply(nonzero$gene, function(x){
+          strsplit(
+            strsplit(x, split="Dot1l\\|")[[1]][2],
+            split="\\|ENS")[[1]][1]
+        })
+        ## all equal elements 
+        trans.nomultiple.exons <- var(sapply(trans.exon, function (x) length(x))) == 0
+        if (!trans.nomultiple.exons){
+          stop("Multiple exons found in matrix ", matrixname)
+        }
+        ## split transcript from exon
+        trans.sep.exon <- sapply(trans.exon, function(x){
+          arr=strsplit(x, split="_");
+          data.frame(trans=arr[[1]][1], exon=as.integer(arr[[1]][2]))
+        })
+        ## and attach both
+        nonzero$transcript <- unlist(trans.sep.exon[1,])
+        nonzero$exonNum <- unlist(trans.sep.exon[2,])
+
+        ## Now split out the library from the barcode
+        lib.sep.cb <- sapply(nonzero$cell, function(x){
+          arr=strsplit(x, split="_");
+          data.frame(library=arr[[1]][1], cellbarcode=arr[[1]][2])
+        })
+        ## and attach both
+        nonzero$library <- unlist(lib.sep.cb[1,])
+        nonzero$cellbarcode <- unlist(lib.sep.cb[2,])
+        ##
+        ## Now reformat all, and seperate junk from data into seperate files
+        newtab <- data.frame(library=nonzero$library,
+                             barcode=nonzero$cellbarcode,
+                             isoform=nonzero$transcript,
+                             exonnum=nonzero$exonNum,
+                             ntrans=nonzero$ntrans)
+        oldtab <- data.frame(cell=nonzero$cell,
+                             gene=nonzero$gene,
+                             ntrans=nonzero$ntrans)
+        print(paste(outfilename, nrow(newtab)))
+        write.table(newtab, file=outfilename, quote=F, sep="\t", row.names = F)
+        write.table(oldtab, file=outjunkname, quote=F, sep="\t", row.names = F)
+      }
+
+
+      dir.create(outdir)
+      input.matrices <- Sys.glob(paste(indir, "*_fixednames_dot1l.tsv", sep="/"))
+      sapply(input.matrices, function(x){
+        matname <- gsub(x,
+                        pattern=".*/([^_]+)_.*.tsv",
+                        replacement="\\1")
+        outname = paste(outdir, "/", matname, ".dot1l.longformat.tsv", sep="")
+        outjunk = paste(outdir, "/", matname, ".dot1l.junk.tsv", sep="")
+        processMatrix(x, outname, outjunk)
+      })
+    #+end_src
+
+    #+RESULTS: processmatricesall
+
+    #+CALL: processmatricesall(indir="fixed_dot1l", outdir="fixed_dot1l_longformat")
+
+    #+RESULTS:
+    #+begin_example
+
+    [1] "fixed_dot1l_longformat/C81711.dot1l.longformat.tsv 23"
+    [1] "fixed_dot1l_longformat/C81712.dot1l.longformat.tsv 31"
+    [1] "fixed_dot1l_longformat/C81713.dot1l.longformat.tsv 24"
+    [1] "fixed_dot1l_longformat/C81714.dot1l.longformat.tsv 21"
+    [1] "fixed_dot1l_longformat/C81721.dot1l.longformat.tsv 26"
+    [1] "fixed_dot1l_longformat/C81722.dot1l.longformat.tsv 23"
+    [1] "fixed_dot1l_longformat/C81723.dot1l.longformat.tsv 21"
+    [1] "fixed_dot1l_longformat/C81724.dot1l.longformat.tsv 24"
+    [1] "fixed_dot1l_longformat/C81731.dot1l.longformat.tsv 30"
+    [1] "fixed_dot1l_longformat/C81732.dot1l.longformat.tsv 32"
+    [1] "fixed_dot1l_longformat/C81733.dot1l.longformat.tsv 30"
+    [1] "fixed_dot1l_longformat/C81734.dot1l.longformat.tsv 18"
+    [1] "fixed_dot1l_longformat/C81741.dot1l.longformat.tsv 38"
+    [1] "fixed_dot1l_longformat/C81742.dot1l.longformat.tsv 30"
+    [1] "fixed_dot1l_longformat/C81743.dot1l.longformat.tsv 28"
+    [1] "fixed_dot1l_longformat/C81744.dot1l.longformat.tsv 33"
+    [1] "fixed_dot1l_longformat/K81312.dot1l.longformat.tsv 37"
+    [1] "fixed_dot1l_longformat/K81313.dot1l.longformat.tsv 40"
+    [1] "fixed_dot1l_longformat/K81314.dot1l.longformat.tsv 25"
+    [1] "fixed_dot1l_longformat/K81321.dot1l.longformat.tsv 29"
+    [1] "fixed_dot1l_longformat/K81322.dot1l.longformat.tsv 39"
+    [1] "fixed_dot1l_longformat/K81323.dot1l.longformat.tsv 30"
+    [1] "fixed_dot1l_longformat/K81324.dot1l.longformat.tsv 21"
+    [1] "fixed_dot1l_longformat/K81331.dot1l.longformat.tsv 31"
+    [1] "fixed_dot1l_longformat/K81332.dot1l.longformat.tsv 21"
+    [1] "fixed_dot1l_longformat/K81333.dot1l.longformat.tsv 16"
+    [1] "fixed_dot1l_longformat/K81334.dot1l.longformat.tsv 29"
+    Error in var(sapply(trans.exon, function(x) length(x))) : 
+      is.atomic(x) is not TRUE
+    In addition: Warning message:
+    In data.frame(trans = arr[[1]][1], exon = as.integer(arr[[1]][2])) :
+      NAs introduced by coercion
+    #+end_example
+
+    #+begin_src elisp
+      (format "We expect %d data lines in total" (+ 23 31 24 21 26 23 21 24 30 32 30 18 38 30 28 33 37 40 25 29 39 30 21 31 21 16 29))
+    #+end_src
+
+    #+RESULTS:
+    : We expect 750 data lines in total
+
+    Now let's cat them all together into one big matrix
+
+    #+begin_src bash :var indir="fixed_dot1l_longformat" outfile="largemat/all.dot1l.longformat.tsv"
+      mkdir -p $(dirname $outfile)
+      first=Y
+      for file in $indir/*.dot1l.longformat.tsv; do
+          if [ "$first" == "Y" ]; then
+             head -1 $file > $outfile ## extract common header
+             first=N
+          fi
+          tail -n +2 $file >> $outfile
+      done
+      wc -l $outfile
+    #+end_src
+
+    #+RESULTS:
+    : 751 largemat/all.dot1l.longformat.tsv
+
+    And finally convert this into a wide format, so that a single line is a library-barcode and columns are all possible isoform_exon combos (there should not be so many)
+
+    #+begin_src R :session rare
+      library(tidyr)
+      library(dplyr)
+      ##
+      tab <- read.table(matfilename, header=T)
+
+      ## transcript level wide matrix
+      ## we ignore individual exons
+      trans.wide <- tab %>%
+        select(c(library, barcode, isoform, ntrans)) %>%
+        group_by(library, barcode, isoform) %>%
+        summarise(total.trans= sum(ntrans)) %>%
+        spread(key=isoform, value=total.trans)
+      trans.wide[is.na(trans.wide)] <- 0
+
+      ## 
+      exon.mat <- tab %>%
+        mutate(trans.exon = paste(isoform, exonnum, sep=".")) %>%
+        select(c(library, barcode, trans.exon, ntrans))
+      ##
+
+    #+end_src
