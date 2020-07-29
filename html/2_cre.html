@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2020-07-27 Mo 15:54 -->
+<!-- 2020-07-27 Mo 16:15 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Salas 2020 CRE recombinase expression</title>
@@ -253,73 +253,73 @@ for the JavaScript code in this tag.
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#org213734b">Testing the Quantification</a>
+<li><a href="#orgf58b414">Testing the Quantification</a>
 <ul>
-<li><a href="#org52c5329">Mapping</a>
+<li><a href="#orgc34e5c1">Mapping</a>
 <ul>
-<li><a href="#org4a53f7f">Check the 43 reads</a></li>
+<li><a href="#orge5e162d">Check the 43 reads</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a href="#org5a6bbc0">Picking a Transcript</a>
+<li><a href="#org36d72e1">Picking a Transcript</a>
 <ul>
-<li><a href="#org76bc554">AddGene</a></li>
-<li><a href="#org3da50ce">NCBI</a></li>
-<li><a href="#org669cef3">What to do</a></li>
+<li><a href="#orgf34be5b">AddGene</a></li>
+<li><a href="#orgef88ce7">NCBI</a></li>
+<li><a href="#org94d7180">What to do</a></li>
 </ul>
 </li>
-<li><a href="#org93a9620">Compute Matrices (Attempt 1)</a>
+<li><a href="#org97e680c">Compute Matrices (Attempt 1)</a>
 <ul>
-<li><a href="#org27e9611">Galaxy Pipeline</a></li>
-<li><a href="#org46c02b8">Inputs</a></li>
-<li><a href="#orgd6a810b">Download Datasets</a>
+<li><a href="#orgf6410ed">Galaxy Pipeline</a></li>
+<li><a href="#orgc073ba0">Inputs</a></li>
+<li><a href="#org0513ebf">Download Datasets</a>
 <ul>
-<li><a href="#org05b4bf0">AddGene</a></li>
-<li><a href="#org5d9bff2">NCBI</a></li>
+<li><a href="#org95737d7">AddGene</a></li>
+<li><a href="#org1623deb">NCBI</a></li>
 </ul>
 </li>
-<li><a href="#org93a8be6">Reformat Matrices and Merge with Adrians matrix</a>
+<li><a href="#org8030ae8">Reformat Matrices and Merge with Adrians matrix</a>
 <ul>
-<li><a href="#org522dae5">AddGene</a></li>
-<li><a href="#org9eb4e0b">NCBI</a></li>
-<li><a href="#org6bae34d">Merge Matrices</a></li>
-<li><a href="#org0de8027">What is going on?</a></li>
+<li><a href="#org0b0fc71">AddGene</a></li>
+<li><a href="#orgf9bd274">NCBI</a></li>
+<li><a href="#orgee9bb3c">Merge Matrices</a></li>
+<li><a href="#org6d9650c">What is going on?</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a href="#org835c801">Compute Matrices (Attempt 2)</a>
+<li><a href="#orgf0cee1f">Compute Matrices (Attempt 2)</a>
 <ul>
 <li>
 <ul>
-<li><a href="#org250da49">Quickly test if the same reads are gotten for the same datasets</a>
+<li><a href="#org56b8dfd">Quickly test if the same reads are gotten for the same datasets</a>
 <ul>
-<li><a href="#org2ef75ab">Dataset 140</a></li>
-<li><a href="#org6e43445">Dataset 128</a></li>
-<li><a href="#org812bbf7">Dataset 116</a></li>
-<li><a href="#org26c0fce">Conclusion</a></li>
+<li><a href="#orga9cbe0c">Dataset 140</a></li>
+<li><a href="#orga6ce261">Dataset 128</a></li>
+<li><a href="#orgfa05872">Dataset 116</a></li>
+<li><a href="#orgc0dec53">Conclusion</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a href="#org6f9cfec">Compute these new matrices</a>
+<li><a href="#org4f96a76">Compute these new matrices</a>
 <ul>
-<li><a href="#orgcc8f717">Setup the ENV</a></li>
-<li><a href="#org0d04c94">Download Datasets</a>
+<li><a href="#org1312cea">Setup the ENV</a></li>
+<li><a href="#org4639850">Download Datasets</a>
 <ul>
-<li><a href="#orge5472ed">AddGene</a></li>
-<li><a href="#org3c09aab">NCBI</a></li>
+<li><a href="#org5829e74">AddGene</a></li>
+<li><a href="#org5ce051f">NCBI</a></li>
 </ul>
 </li>
-<li><a href="#orgdd5ff09">Reformat Matrices and Merge with Adrians matrix</a></li>
-<li><a href="#org7f807d3">Merge Matrices</a></li>
-<li><a href="#orgb8fab05">Producing the Final Matrix</a></li>
+<li><a href="#org8356227">Reformat Matrices and Merge with Adrians matrix</a></li>
+<li><a href="#org74bb670">Merge Matrices</a></li>
+<li><a href="#org636a602">Producing the Final Matrix</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a href="#orgdf0cbf6">Summary</a></li>
+<li><a href="#org0c17d69">Summary</a></li>
 </ul>
 </div>
 </div>
@@ -327,13 +327,13 @@ for the JavaScript code in this tag.
 The aim here is to measure CRE recombinase expression by mapping the FASTQ batch data to the transcriptome of the CRE recombinase.
 </p>
 
-<div id="outline-container-org213734b" class="outline-2">
-<h2 id="org213734b">Testing the Quantification</h2>
-<div class="outline-text-2" id="text-org213734b">
+<div id="outline-container-orgf58b414" class="outline-2">
+<h2 id="orgf58b414">Testing the Quantification</h2>
+<div class="outline-text-2" id="text-orgf58b414">
 </div>
-<div id="outline-container-org52c5329" class="outline-3">
-<h3 id="org52c5329">Mapping</h3>
-<div class="outline-text-3" id="text-org52c5329">
+<div id="outline-container-orgc34e5c1" class="outline-3">
+<h3 id="orgc34e5c1">Mapping</h3>
+<div class="outline-text-3" id="text-orgc34e5c1">
 <p>
 This was performed on Galaxy. Initially <code>RNA STAR</code> was attempted but failed due to errors (it's more suitable for mapping to the Genome) and any and all attempts to force it work (including creating dummy GTF files) did not yield any results. BWA also failed to map this way, and Salmon (which has CELseq2 mapping capabilities) failed also.
 </p>
@@ -347,9 +347,9 @@ A few random datasets were picked from the previous <i>Adrian Salas Datasets</i>
 </p>
 </div>
 
-<div id="outline-container-org4a53f7f" class="outline-4">
-<h4 id="org4a53f7f">Check the 43 reads</h4>
-<div class="outline-text-4" id="text-org4a53f7f">
+<div id="outline-container-orge5e162d" class="outline-4">
+<h4 id="orge5e162d">Check the 43 reads</h4>
+<div class="outline-text-4" id="text-orge5e162d">
 <p>
 Here we try to find the 43 reads in the HISAT2 BAM file
 </p>
@@ -1016,17 +1016,17 @@ GGGCCG	8
 
 
 
-<div id="outline-container-org5a6bbc0" class="outline-2">
-<h2 id="org5a6bbc0">Picking a Transcript</h2>
-<div class="outline-text-2" id="text-org5a6bbc0">
+<div id="outline-container-org36d72e1" class="outline-2">
+<h2 id="org36d72e1">Picking a Transcript</h2>
+<div class="outline-text-2" id="text-org36d72e1">
 <p>
 Two options were given, one I discovered online (AddGene), and the other from Adrian (NCBI). There is virtually no overlap between these two sequences, leading me to wonder which of these are actually the correct sequence to use.
 </p>
 </div>
 
-<div id="outline-container-org76bc554" class="outline-3">
-<h3 id="org76bc554">AddGene</h3>
-<div class="outline-text-3" id="text-org76bc554">
+<div id="outline-container-orgf34be5b" class="outline-3">
+<h3 id="orgf34be5b">AddGene</h3>
+<div class="outline-text-3" id="text-orgf34be5b">
 <p>
 The CRE recombinase sequence I found was at <a href="https://www.addgene.org/62730/sequences/">AddGene</a> and 6.7 kbp long:
 </p>
@@ -1137,9 +1137,9 @@ TAGCAATTTAACTGTGATAAACTACCGCATTAAAGCTTATCGATGATAAGCTGTCAAACATGAGAA
 </div>
 
 
-<div id="outline-container-org3da50ce" class="outline-3">
-<h3 id="org3da50ce">NCBI</h3>
-<div class="outline-text-3" id="text-org3da50ce">
+<div id="outline-container-orgef88ce7" class="outline-3">
+<h3 id="orgef88ce7">NCBI</h3>
+<div class="outline-text-3" id="text-orgef88ce7">
 <p>
 This is the one that Adrian sent in an email from <a href="https://www.ncbi.nlm.nih.gov/nuccore/NC_005856.1?report=fasta&amp;from=436&amp;to=1467">NCBI</a>:
 </p>
@@ -1166,9 +1166,9 @@ CCTGGATAGTGAAACAGGGGCAATGGTGCGCCTGCTGGAAGATGGCGATTAG
 </div>
 </div>
 
-<div id="outline-container-org669cef3" class="outline-3">
-<h3 id="org669cef3">What to do</h3>
-<div class="outline-text-3" id="text-org669cef3">
+<div id="outline-container-org94d7180" class="outline-3">
+<h3 id="org94d7180">What to do</h3>
+<div class="outline-text-3" id="text-org94d7180">
 <p>
 We will map to both sequences and compare. Who knows, maybe it's useful?
 </p>
@@ -1177,17 +1177,17 @@ We will map to both sequences and compare. Who knows, maybe it's useful?
 </div>
 
 
-<div id="outline-container-org93a9620" class="outline-2">
-<h2 id="org93a9620">Compute Matrices (Attempt 1)</h2>
-<div class="outline-text-2" id="text-org93a9620">
+<div id="outline-container-org97e680c" class="outline-2">
+<h2 id="org97e680c">Compute Matrices (Attempt 1)</h2>
+<div class="outline-text-2" id="text-org97e680c">
 <p>
 Note: You can skip this entire section, I made a small mistake with the final count step which I then rectified with Attempt 2.
 </p>
 </div>
 
-<div id="outline-container-org27e9611" class="outline-3">
-<h3 id="org27e9611">Galaxy Pipeline</h3>
-<div class="outline-text-3" id="text-org27e9611">
+<div id="outline-container-orgf6410ed" class="outline-3">
+<h3 id="orgf6410ed">Galaxy Pipeline</h3>
+<div class="outline-text-3" id="text-orgf6410ed">
 <p>
 We use <code>umi-tools extract</code> for the demultiplexing, <code>HISAT2</code> for mapping, <code>umi-tools deduplicate</code> for the deduplication, and then the above awk script to perform the quantification.
 </p>
@@ -2984,9 +2984,9 @@ AElFTkSuQmCC"pipeline.png />
 </div>
 </div>
 
-<div id="outline-container-org46c02b8" class="outline-3">
-<h3 id="org46c02b8">Inputs</h3>
-<div class="outline-text-3" id="text-org46c02b8">
+<div id="outline-container-orgc073ba0" class="outline-3">
+<h3 id="orgc073ba0">Inputs</h3>
+<div class="outline-text-3" id="text-orgc073ba0">
 <p>
 The input FASTQ datasets were the same used to quantify the Dot1L expression in a previous analysis (see the first <a href="1_plots.html">notebook</a>), with the Galaxy History <i>Adrian Salas Datasets</i>.
 </p>
@@ -3000,7 +3000,7 @@ The dataset number and the dataset history are related as follows
 </p>
 
 <div class="org-src-container">
-<pre class="src src-python" id="org848efb9"># load env
+<pre class="src src-python" id="org1fbdb66"># load env
 import subprocess
 activate_this_file = "/home/tetris/.bioblend/bin/activate_this.py"
 f=open(activate_this_file, 'r')
@@ -3009,7 +3009,7 @@ exec(f.read(), dict(__file__=activate_this_file))
 </div>
 
 <div class="org-src-container">
-<pre class="src src-python" id="org0d1cbb9">from bioblend import galaxy
+<pre class="src src-python" id="orgda7aba1">from bioblend import galaxy
 # Get this from https://usegalaxy.eu/user/api_key
 your_api_key = "BLAHBLAH"
 # Make sure this directory exists
@@ -3083,11 +3083,11 @@ So we have the history ids as well as the matrix names. This will be useful late
 </div>
 </div>
 
-<div id="outline-container-orgd6a810b" class="outline-3">
-<h3 id="orgd6a810b">Download Datasets</h3>
-<div class="outline-text-3" id="text-orgd6a810b">
+<div id="outline-container-org0513ebf" class="outline-3">
+<h3 id="org0513ebf">Download Datasets</h3>
+<div class="outline-text-3" id="text-org0513ebf">
 <div class="org-src-container">
-<pre class="src src-python" id="org35e07fd">import os
+<pre class="src src-python" id="org988688c">import os
 os.mkdir(outdir)
 histories = [(lip['id'],int(lip['name'].split(histprefix)[1]),lip['name'])
              for lip in hl
@@ -3106,9 +3106,9 @@ for histdata in histories:
 </div>
 
 
-<div id="outline-container-org05b4bf0" class="outline-4">
-<h4 id="org05b4bf0">AddGene</h4>
-<div class="outline-text-4" id="text-org05b4bf0">
+<div id="outline-container-org95737d7" class="outline-4">
+<h4 id="org95737d7">AddGene</h4>
+<div class="outline-text-4" id="text-org95737d7">
 <p>
 The AddGene histories all start with "CRE recombinase Count on "
 </p>
@@ -3165,9 +3165,9 @@ The AddGene histories all start with "CRE recombinase Count on "
 </div>
 
 
-<div id="outline-container-org5d9bff2" class="outline-4">
-<h4 id="org5d9bff2">NCBI</h4>
-<div class="outline-text-4" id="text-org5d9bff2">
+<div id="outline-container-org1623deb" class="outline-4">
+<h4 id="org1623deb">NCBI</h4>
+<div class="outline-text-4" id="text-org1623deb">
 <p>
 The NCBI histories all start with "CRE Salas Email Count on "
 </p>
@@ -3227,15 +3227,15 @@ The NCBI histories all start with "CRE Salas Email Count on "
 
 
 
-<div id="outline-container-org93a8be6" class="outline-3">
-<h3 id="org93a8be6">Reformat Matrices and Merge with Adrians matrix</h3>
-<div class="outline-text-3" id="text-org93a8be6">
+<div id="outline-container-org8030ae8" class="outline-3">
+<h3 id="org8030ae8">Reformat Matrices and Merge with Adrians matrix</h3>
+<div class="outline-text-3" id="text-org8030ae8">
 <p>
 Prepend the matrix name before the cell barcodes in each file, and then concatenate into one giant table.
 </p>
 
 <div class="org-src-container">
-<pre class="src src-bash" id="org1a58c26">echo -e "Matrix\tCellBarcode\tCount" &gt; ${dirname}.tsv
+<pre class="src src-bash" id="orga89740b">echo -e "Matrix\tCellBarcode\tCount" &gt; ${dirname}.tsv
 for dataset in $dirname/*.tsv; do
     dirn=$(dirname $dataset)
     fnam=$(echo $dataset | sed -r 's|.*/[0-9]+_([KC][0-9]+)\.tsv|\1|')
@@ -3245,27 +3245,27 @@ done
 </div>
 </div>
 
-<div id="outline-container-org522dae5" class="outline-4">
-<h4 id="org522dae5">AddGene</h4>
-<div class="outline-text-4" id="text-org522dae5">
+<div id="outline-container-org0b0fc71" class="outline-4">
+<h4 id="org0b0fc71">AddGene</h4>
+<div class="outline-text-4" id="text-org0b0fc71">
 </div>
 </div>
 
-<div id="outline-container-org9eb4e0b" class="outline-4">
-<h4 id="org9eb4e0b">NCBI</h4>
-<div class="outline-text-4" id="text-org9eb4e0b">
+<div id="outline-container-orgf9bd274" class="outline-4">
+<h4 id="orgf9bd274">NCBI</h4>
+<div class="outline-text-4" id="text-orgf9bd274">
 </div>
 </div>
 
-<div id="outline-container-org6bae34d" class="outline-4">
-<h4 id="org6bae34d">Merge Matrices</h4>
-<div class="outline-text-4" id="text-org6bae34d">
+<div id="outline-container-orgee9bb3c" class="outline-4">
+<h4 id="orgee9bb3c">Merge Matrices</h4>
+<div class="outline-text-4" id="text-orgee9bb3c">
 <p>
 Here we merge the AddGene and the NCBI annotations based on their common <code>matrix_cellbarcode</code> identifiers. Let's do this in R to see how much overlap there is between the matrices we have computed here, and the metadata file given by Adrian.
 </p>
 
 <div class="org-src-container">
-<pre class="src src-R" id="orgc487a9b">library(dplyr)
+<pre class="src src-R" id="org35d694c">library(dplyr)
 
 readin &lt;- function(name){
   res &lt;- read.table(name, header=T)
@@ -3289,10 +3289,10 @@ overlapUniq &lt;- function(v1, v2, names=FALSE){
   }
 }
 
-addgene &lt;- readin('addgene.tsv')
-ncbi &lt;- readin('ncbi.tsv')
+addgene &lt;- readin('files/2_cre/addgene.tsv')
+ncbi &lt;- readin('files/2_cre/ncbi.tsv')
 ## load adrians metadata object
-adrians &lt;- readRDS('~/Downloads/metadata_sc_RaceID.RDS')
+adrians &lt;- readRDS('files/2_cre/metadata_sc_RaceID.RDS')
 
 </pre>
 </div>
@@ -3302,7 +3302,7 @@ Print some stats on the overlap
 </p>
 
 <div class="org-src-container">
-<pre class="src src-R" id="org0ca3049">print(sprintf("Libraries [Adrians, AddGene, NCBI]: %d, %d, %d",
+<pre class="src src-R" id="org8035694">print(sprintf("Libraries [Adrians, AddGene, NCBI]: %d, %d, %d",
               numUniq(adrians$library),
               numUniq(addgene$library),
               numUniq(ncbi$library)))
@@ -3495,9 +3495,9 @@ lib.bar("K81424", "TTCTGA")
 </div>
 
 
-<div id="outline-container-org0de8027" class="outline-4">
-<h4 id="org0de8027">What is going on?</h4>
-<div class="outline-text-4" id="text-org0de8027">
+<div id="outline-container-org6d9650c" class="outline-4">
+<h4 id="org6d9650c">What is going on?</h4>
+<div class="outline-text-4" id="text-org6d9650c">
 <p>
 3701 cells in Adrian's matrix, with only 1 (NCBI) or 5 (AddGene) cells overlapping them from my matrices.
 </p>
@@ -3548,9 +3548,9 @@ This is different from what I did because I thought the UMI came first (as it do
 
 
 
-<div id="outline-container-org835c801" class="outline-2">
-<h2 id="org835c801">Compute Matrices (Attempt 2)</h2>
-<div class="outline-text-2" id="text-org835c801">
+<div id="outline-container-orgf0cee1f" class="outline-2">
+<h2 id="orgf0cee1f">Compute Matrices (Attempt 2)</h2>
+<div class="outline-text-2" id="text-orgf0cee1f">
 <p>
 This time we tweak the AWK step so that cell barcodes come first followed by the UMIs in the read headers.
 </p>
@@ -3568,17 +3568,17 @@ I will run this overnight and repeat the quantification steps above. The AddGene
 </p>
 </div>
 
-<div id="outline-container-org250da49" class="outline-4">
-<h4 id="org250da49">Quickly test if the same reads are gotten for the same datasets</h4>
-<div class="outline-text-4" id="text-org250da49">
+<div id="outline-container-org56b8dfd" class="outline-4">
+<h4 id="org56b8dfd">Quickly test if the same reads are gotten for the same datasets</h4>
+<div class="outline-text-4" id="text-org56b8dfd">
 <p>
 I will pick 3 random datasets and visually compare their extracted reads across histories.
 </p>
 </div>
 
-<div id="outline-container-org2ef75ab" class="outline-5">
-<h5 id="org2ef75ab">Dataset 140</h5>
-<div class="outline-text-5" id="text-org2ef75ab">
+<div id="outline-container-orga9cbe0c" class="outline-5">
+<h5 id="orga9cbe0c">Dataset 140</h5>
+<div class="outline-text-5" id="text-orga9cbe0c">
 <p>
 Column 1 and 3 have the same reads, and so do 2 and 4 as expected.
 The count matrices are different with the newer matrix in 1 having a cell with 13 counts compared to the column 3 matrix.
@@ -5835,9 +5835,9 @@ Cd5asQuclEP6nk2ykY7rEsBJOZhbS2SjBd/cOzNBNnLx67RVWl2vp0nY0NGAiMQVEFq58NOQXXz9
 </div>
 </div>
 
-<div id="outline-container-org6e43445" class="outline-5">
-<h5 id="org6e43445">Dataset 128</h5>
-<div class="outline-text-5" id="text-org6e43445">
+<div id="outline-container-orga6ce261" class="outline-5">
+<h5 id="orga6ce261">Dataset 128</h5>
+<div class="outline-text-5" id="text-orga6ce261">
 <p>
 Column 1 and 3 have the same reads, and so do 2 and 4 as expected. The count matrices are different as expected.
 </p>
@@ -8793,9 +8793,9 @@ SUVORK5CYII="dataset128.png />
 </div>
 
 
-<div id="outline-container-org812bbf7" class="outline-5">
-<h5 id="org812bbf7">Dataset 116</h5>
-<div class="outline-text-5" id="text-org812bbf7">
+<div id="outline-container-orgfa05872" class="outline-5">
+<h5 id="orgfa05872">Dataset 116</h5>
+<div class="outline-text-5" id="text-orgfa05872">
 <p>
 Column 1 and 3 have the same reads, and so do 2 and 4 as expected. The count matrices are different as expected.
 </p>
@@ -10915,9 +10915,9 @@ fe9bSgdjAAAAAElFTkSuQmCC"dataset116.png />
 </div>
 </div>
 
-<div id="outline-container-org26c0fce" class="outline-5">
-<h5 id="org26c0fce">Conclusion</h5>
-<div class="outline-text-5" id="text-org26c0fce">
+<div id="outline-container-orgc0dec53" class="outline-5">
+<h5 id="orgc0dec53">Conclusion</h5>
+<div class="outline-text-5" id="text-orgc0dec53">
 <p>
 From the 3 datasets I chose, their extracted and deduplicated reads are the same (Columns 1 + 3, Columns 2 + 4) but the count matrices are different due to the awk script being tweaked to count the actual cell barcodes (not the UMIs as before).
 </p>
@@ -10926,17 +10926,17 @@ From the 3 datasets I chose, their extracted and deduplicated reads are the same
 </div>
 
 
-<div id="outline-container-org6f9cfec" class="outline-3">
-<h3 id="org6f9cfec">Compute these new matrices</h3>
-<div class="outline-text-3" id="text-org6f9cfec">
+<div id="outline-container-org4f96a76" class="outline-3">
+<h3 id="org4f96a76">Compute these new matrices</h3>
+<div class="outline-text-3" id="text-org4f96a76">
 <p>
 We call the same scripts as before but with slightly tweaked inputs
 </p>
 </div>
 
-<div id="outline-container-orgcc8f717" class="outline-4">
-<h4 id="orgcc8f717">Setup the ENV</h4>
-<div class="outline-text-4" id="text-orgcc8f717">
+<div id="outline-container-org1312cea" class="outline-4">
+<h4 id="org1312cea">Setup the ENV</h4>
+<div class="outline-text-4" id="text-org1312cea">
 <pre class="example">
 ID	Name
 5	C81721
@@ -10989,17 +10989,17 @@ ID	Name
 </div>
 </div>
 
-<div id="outline-container-org0d04c94" class="outline-4">
-<h4 id="org0d04c94">Download Datasets</h4>
-<div class="outline-text-4" id="text-org0d04c94">
+<div id="outline-container-org4639850" class="outline-4">
+<h4 id="org4639850">Download Datasets</h4>
+<div class="outline-text-4" id="text-org4639850">
 <p>
 (I quickly verified a few matrices to see if they agree with the screenshots, and yes they do)
 </p>
 </div>
 
-<div id="outline-container-orge5472ed" class="outline-5">
-<h5 id="orge5472ed">AddGene</h5>
-<div class="outline-text-5" id="text-orge5472ed">
+<div id="outline-container-org5829e74" class="outline-5">
+<h5 id="org5829e74">AddGene</h5>
+<div class="outline-text-5" id="text-org5829e74">
 <pre class="example">
 140 K81434
 137 K81433
@@ -11051,9 +11051,9 @@ ID	Name
 </div>
 </div>
 
-<div id="outline-container-org3c09aab" class="outline-5">
-<h5 id="org3c09aab">NCBI</h5>
-<div class="outline-text-5" id="text-org3c09aab">
+<div id="outline-container-org5ce051f" class="outline-5">
+<h5 id="org5ce051f">NCBI</h5>
+<div class="outline-text-5" id="text-org5ce051f">
 <pre class="example">
 140 K81434
 137 K81433
@@ -11106,18 +11106,18 @@ ID	Name
 </div>
 </div>
 
-<div id="outline-container-orgdd5ff09" class="outline-4">
-<h4 id="orgdd5ff09">Reformat Matrices and Merge with Adrians matrix</h4>
-<div class="outline-text-4" id="text-orgdd5ff09">
+<div id="outline-container-org8356227" class="outline-4">
+<h4 id="org8356227">Reformat Matrices and Merge with Adrians matrix</h4>
+<div class="outline-text-4" id="text-org8356227">
 <p>
 Prepend the matrix name before the cell barcodes in each file, and then concatenate into one giant table.
 </p>
 </div>
 </div>
 
-<div id="outline-container-org7f807d3" class="outline-4">
-<h4 id="org7f807d3">Merge Matrices</h4>
-<div class="outline-text-4" id="text-org7f807d3">
+<div id="outline-container-org74bb670" class="outline-4">
+<h4 id="org74bb670">Merge Matrices</h4>
+<div class="outline-text-4" id="text-org74bb670">
 <pre class="example">
 
 [1] "Libraries [Adrians, AddGene, NCBI]: 46, 43, 28"
@@ -11151,9 +11151,9 @@ Let's perform the merge with Adrian's matrix, giving cells which have no express
 </div>
 </div>
 
-<div id="outline-container-orgb8fab05" class="outline-4">
-<h4 id="orgb8fab05">Producing the Final Matrix</h4>
-<div class="outline-text-4" id="text-orgb8fab05">
+<div id="outline-container-org636a602" class="outline-4">
+<h4 id="org636a602">Producing the Final Matrix</h4>
+<div class="outline-text-4" id="text-org636a602">
 <div class="org-src-container">
 <pre class="src src-R">library(dplyr)
 ncbi.and.addgene &lt;- full_join(ncbi, addgene,
@@ -11167,7 +11167,7 @@ tab2 &lt;- left_join(adrians, ncbi.and.addgene,
 ## now we replace the NA's with 0's
 tab2[is.na(tab2)] &lt;- 0
 ## and save
-saveRDS(tab2, file="metadata_sc_RaceID.CREannotation.RDS")
+saveRDS(tab2, file="files/2_cre/metadata_sc_RaceID.CREannotation.RDS")
 </pre>
 </div>
 </div>
@@ -11175,9 +11175,9 @@ saveRDS(tab2, file="metadata_sc_RaceID.CREannotation.RDS")
 </div>
 </div>
 
-<div id="outline-container-orgdf0cbf6" class="outline-2">
-<h2 id="orgdf0cbf6">Summary</h2>
-<div class="outline-text-2" id="text-orgdf0cbf6">
+<div id="outline-container-org0c17d69" class="outline-2">
+<h2 id="org0c17d69">Summary</h2>
+<div class="outline-text-2" id="text-org0c17d69">
 <p>
 Galaxy was used to map and quantify the expression of the CRE recombinase, using HISAT2 and awk. The input datasets are <a href="https://usegalaxy.eu/u/mehmet-tekman/h/adrian-salas-datasets">hosted on Galaxy here</a>, and the workflow to generate the analysis is <a href="https://usegalaxy.eu/u/mehmet-tekman/w/cre-recombinase-count-fixed">hosted on Galaxy here</a>. The output matrix is attached with this report under the name <code>metadata_sc_RaceID.CREannotation.RDS</code>, and it is also hosted at the <a href="https://github.com/mtekman/scRNA_2020_salas/">GitHub repository</a> for this notebook.
 </p>
@@ -11198,7 +11198,7 @@ The cells which expressed the NCBI transcript were expressed only in the K8[0-9]
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Mehmet Tekman</p>
-<p class="date">Created: 2020-07-27 Mo 15:54</p>
+<p class="date">Created: 2020-07-27 Mo 16:15</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>

@@ -1,4 +1,4 @@
-#+TITLE: Salas 2020 Dot1L Data
+#+TITLE: Salas 2020 Dot1L Transcript Data
 #+SETUPFILE: https://fniessen.github.io/org-html-themes/setup/theme-readtheorg.setup
 #+PROPERTY: header-args :exports both :eval never-export
 #+OPTIONS: H:4 num:nil toc:5
@@ -13,14 +13,19 @@ We will then merge all these matrices/libraries into the same file with columns 
 
  1. Library
  2. CellBarcode
- 3. Dot1L Isoform Total
- 4. Dot1L Isoform Specific Exon ...
- 5. Dot1L Isoform Specific Exon ...
- 6. Dot1L Isoform Specific Exon ...
-
-The number of columns for "Dot1L Isoform Specific Exon" can be determined in advance, and I anticipate no more than 10.
+ 3. Dot1L Isoform1 Total
+ 4. Dot1L Isoform2 Total
+ 5. Dot1L IsoformN Total
+ 6. Dot1L Isoform1 ExonX ...
+ 7. Dot1L Isoform1 ExonY ...
+ 8. Dot1L Isoform1 ExonZ ...
+ 9. Dot1L Isoform2 ExonB ...
+ 10. Dot1L IsoformN ExonA ...
+ 11. etc.
 
 * Download Datasets
+
+  Setup the environment and extract the wanted dataset names from the history
 
    #+NAME: setupenv
    #+begin_src python :session yes
@@ -36,7 +41,7 @@ The number of columns for "Dot1L Isoform Specific Exon" can be determined in adv
    #+begin_src python :session yes :results output
      from bioblend import galaxy
      # Get this from https://usegalaxy.eu/user/api_key
-     your_api_key = "2d71b7d06551df0023446673f8ed202a"
+     your_api_key = "BLAH"
      # Make sure this directory exists
      output_directory = "output"
      gi = galaxy.GalaxyInstance(url="https://usegalaxy.eu", key=your_api_key)
@@ -117,6 +122,8 @@ The number of columns for "Dot1L Isoform Specific Exon" can be determined in adv
 
     #+RESULTS: downloaddatasets
 
+* Download GTF
+
     Also we'll download the GTF file  
 
     #+begin_src python :session yes :var outdir="matrices" :results output verbatim
@@ -127,7 +134,9 @@ The number of columns for "Dot1L Isoform Specific Exon" can be determined in adv
 
     #+RESULTS:
     
-    Let's map out the GTf file
+* Map the GTF file
+
+    Let's map out the GTf file, so that we can resolve =ENS= exon names to actual =Gene_Exon= names.
 
     #+begin_src python :session yes
       mapped = {}
@@ -172,9 +181,8 @@ The number of columns for "Dot1L Isoform Specific Exon" can be determined in adv
 
     #+RESULTS:
 
-
-    Just get the Dot1L transcripts
-
+    Quick printout of the Dot1L transcripts:
+    
     #+begin_src python :session yes :results output verbatim
       for x in mapped:
           if mapped[x][0].startswith("Dot1l"):
@@ -249,7 +257,9 @@ The number of columns for "Dot1L Isoform Specific Exon" can be determined in adv
     ['Dot1l', {'Dot1l-203': [2]}]
     #+end_example
 
-    Fix the names by prepping the matrices
+* Fix the Gene names of the Matrices
+
+  Use the GTF file map to change the gene names of the matrices into something more readable
 
     #+begin_src python :session yes :var indir="matrices" :var outdir="fixed" :results output verbatim
       os.mkdir(outdir)
@@ -286,6 +296,8 @@ The number of columns for "Dot1L Isoform Specific Exon" can be determined in adv
 
     These matrices contain information about =Gene|Transcript_Exon|ENSExon=
 
+* Filter Matrices for Dot1L transcripts
+
     Let's filter these specifically for =Dot1L= expression.
 
     #+begin_src python :session yes :var indir="fixed" :var outdir="fixed_dot1l" :results output verbatim    
@@ -312,7 +324,9 @@ The number of columns for "Dot1L Isoform Specific Exon" can be determined in adv
 
     #+RESULTS:
 
-    And now flatten the matrices into a table. (Let's pick one matrix and see how we can flatten it)
+* Change matrices from Wide to Long format
+
+    This flattens the matrices into a table.
 
     #+NAME: processmatricesall
     #+begin_src R :session rare :var indir="" outdir="" :results output verbatim
@@ -320,20 +334,45 @@ The number of columns for "Dot1L Isoform Specific Exon" can be determined in adv
 
       processMatrix <- function(matfilename, outfilename, outjunkname){
         tab <- read.table(matfilename, header=T)
+        if (nrow(tab) == 0){
+           print(paste("No Dot1L data in", matfilename))
+           return(0)
+        }
         wideform <- gather(tab, cell, ntrans, 2:ncol(tab))
         nonzero <- wideform[wideform$ntrans > 0,]
         ## extract transcript and exon info
         ##trans.exon <- sapply(nonzero$gene, function(x){strsplit(x, split="\\|")[[1]][2]})
         trans.exon <- sapply(nonzero$gene, function(x){
-          strsplit(
-            strsplit(x, split="Dot1l\\|")[[1]][2],
-            split="\\|ENS")[[1]][1]
+          strsplit(strsplit(strsplit(x,
+                                     split="Dot1l\\|")[[1]][2],
+                            split="\\|ENS")[[1]][1],
+                   split="\\|")[[1]]
         })
-        ## all equal elements 
-        trans.nomultiple.exons <- var(sapply(trans.exon, function (x) length(x))) == 0
-        if (!trans.nomultiple.exons){
-          stop("Multiple exons found in matrix ", matrixname)
-        }
+        ## Handle rows which have multiple exons mapped
+        res <- lapply(1:nrow(nonzero), function(n){
+          data <- nonzero[n,]
+          t.ex <- unlist(trans.exon[n])
+          if (length(t.ex)>1){
+            print(paste("Multiple exons found in matrix ", matfilename))
+            print(data)
+            ## replace current gene with first
+            old.data <- data
+            nonzero[n,]$gene <- paste("Dot1l|", t.ex[1], "|ENS", sep="")
+            ## duplicate row and separate annotations
+            for (dup in t.ex[2:length(t.ex)]){
+              newdata <- old.data
+              newdata$gene <- paste("Dot1l|", dup, "|ENS", sep="")
+              nonzero <<- rbind(nonzero, newdata)
+            }
+          }
+        })
+        ## recalc again
+        trans.exon <- sapply(nonzero$gene, function(x){
+          strsplit(strsplit(strsplit(x,
+                                     split="Dot1l\\|")[[1]][2],
+                            split="\\|ENS")[[1]][1],
+                   split="\\|")[[1]]
+        })
         ## split transcript from exon
         trans.sep.exon <- sapply(trans.exon, function(x){
           arr=strsplit(x, split="_");
@@ -369,7 +408,7 @@ The number of columns for "Dot1L Isoform Specific Exon" can be determined in adv
 
       dir.create(outdir)
       input.matrices <- Sys.glob(paste(indir, "*_fixednames_dot1l.tsv", sep="/"))
-      sapply(input.matrices, function(x){
+      res <- sapply(input.matrices, function(x){
         matname <- gsub(x,
                         pattern=".*/([^_]+)_.*.tsv",
                         replacement="\\1")
@@ -379,13 +418,12 @@ The number of columns for "Dot1L Isoform Specific Exon" can be determined in adv
       })
     #+end_src
 
-    #+RESULTS: processmatricesall
-
     #+CALL: processmatricesall(indir="fixed_dot1l", outdir="fixed_dot1l_longformat")
 
     #+RESULTS:
     #+begin_example
-
+    Warning message:
+    In dir.create(outdir) : 'fixed_dot1l_longformat' already exists
     [1] "fixed_dot1l_longformat/C81711.dot1l.longformat.tsv 23"
     [1] "fixed_dot1l_longformat/C81712.dot1l.longformat.tsv 31"
     [1] "fixed_dot1l_longformat/C81713.dot1l.longformat.tsv 24"
@@ -401,7 +439,10 @@ The number of columns for "Dot1L Isoform Specific Exon" can be determined in adv
     [1] "fixed_dot1l_longformat/C81741.dot1l.longformat.tsv 38"
     [1] "fixed_dot1l_longformat/C81742.dot1l.longformat.tsv 30"
     [1] "fixed_dot1l_longformat/C81743.dot1l.longformat.tsv 28"
-    [1] "fixed_dot1l_longformat/C81744.dot1l.longformat.tsv 33"
+    [1] "Multiple exons found in matrix  fixed_dot1l/C81744_fixednames_dot1l.tsv"
+                                                       gene          cell ntrans
+    571 Dot1l|Dot1l-201_27|Dot1l-205_4|ENSMUSE00000461103.2 C81744_TTGGTC      2
+    [1] "fixed_dot1l_longformat/C81744.dot1l.longformat.tsv 34"
     [1] "fixed_dot1l_longformat/K81312.dot1l.longformat.tsv 37"
     [1] "fixed_dot1l_longformat/K81313.dot1l.longformat.tsv 40"
     [1] "fixed_dot1l_longformat/K81314.dot1l.longformat.tsv 25"
@@ -413,21 +454,48 @@ The number of columns for "Dot1L Isoform Specific Exon" can be determined in adv
     [1] "fixed_dot1l_longformat/K81332.dot1l.longformat.tsv 21"
     [1] "fixed_dot1l_longformat/K81333.dot1l.longformat.tsv 16"
     [1] "fixed_dot1l_longformat/K81334.dot1l.longformat.tsv 29"
-    Error in var(sapply(trans.exon, function(x) length(x))) : 
-      is.atomic(x) is not TRUE
-    In addition: Warning message:
-    In data.frame(trans = arr[[1]][1], exon = as.integer(arr[[1]][2])) :
-      NAs introduced by coercion
+    [1] "No Dot1L data in fixed_dot1l/K81341_fixednames_dot1l.tsv"
+    [1] "fixed_dot1l_longformat/K81342.dot1l.longformat.tsv 28"
+    [1] "Multiple exons found in matrix  fixed_dot1l/K81343_fixednames_dot1l.tsv"
+                                                      gene          cell ntrans
+    27 Dot1l|Dot1l-201_27|Dot1l-205_4|ENSMUSE00000461103.2 K81343_ACCAAC      1
+    [1] "fixed_dot1l_longformat/K81343.dot1l.longformat.tsv 35"
+    [1] "fixed_dot1l_longformat/K81411.dot1l.longformat.tsv 29"
+    [1] "fixed_dot1l_longformat/K81412.dot1l.longformat.tsv 30"
+    [1] "fixed_dot1l_longformat/K81413.dot1l.longformat.tsv 33"
+    [1] "fixed_dot1l_longformat/K81414.dot1l.longformat.tsv 11"
+    [1] "fixed_dot1l_longformat/K81421.dot1l.longformat.tsv 18"
+    [1] "fixed_dot1l_longformat/K81422.dot1l.longformat.tsv 21"
+    [1] "fixed_dot1l_longformat/K81423.dot1l.longformat.tsv 28"
+    [1] "fixed_dot1l_longformat/K81424.dot1l.longformat.tsv 34"
+    [1] "fixed_dot1l_longformat/K81431.dot1l.longformat.tsv 37"
+    [1] "fixed_dot1l_longformat/K81432.dot1l.longformat.tsv 38"
+    [1] "fixed_dot1l_longformat/K81433.dot1l.longformat.tsv 42"
+    [1] "fixed_dot1l_longformat/K81434.dot1l.longformat.tsv 26"
+    [1] "Multiple exons found in matrix  fixed_dot1l/K81441_fixednames_dot1l.tsv"
+                                                      gene          cell ntrans
+    43 Dot1l|Dot1l-201_27|Dot1l-205_4|ENSMUSE00000461103.2 K81441_ACTCGA      1
+    [1] "Multiple exons found in matrix  fixed_dot1l/K81441_fixednames_dot1l.tsv"
+                                                       gene          cell ntrans
+    355 Dot1l|Dot1l-201_27|Dot1l-205_4|ENSMUSE00000461103.2 K81441_TGTCTG      1
+    [1] "fixed_dot1l_longformat/K81441.dot1l.longformat.tsv 39"
+    [1] "fixed_dot1l_longformat/K81442.dot1l.longformat.tsv 26"
+    [1] "Multiple exons found in matrix  fixed_dot1l/K81443_fixednames_dot1l.tsv"
+                                                       gene          cell ntrans
+    187 Dot1l|Dot1l-201_27|Dot1l-205_4|ENSMUSE00000461103.2 K81443_CAGAAG      1
+    [1] "fixed_dot1l_longformat/K81443.dot1l.longformat.tsv 33"
+    [1] "Multiple exons found in matrix  fixed_dot1l/K81444_fixednames_dot1l.tsv"
+                                                       gene          cell ntrans
+    145 Dot1l|Dot1l-201_27|Dot1l-205_4|ENSMUSE00000461103.2 K81444_CCGATA      1
+    [1] "fixed_dot1l_longformat/K81444.dot1l.longformat.tsv 36"
     #+end_example
 
-    #+begin_src elisp
-      (format "We expect %d data lines in total" (+ 23 31 24 21 26 23 21 24 30 32 30 18 38 30 28 33 37 40 25 29 39 30 21 31 21 16 29))
-    #+end_src
+    There was no Dot1L data in library =K81341=, and matrices =C81744= =K81343= =K81441= =K81443= =K81444= all shared counts which overlapped two exons
+    =Dot1l-201_27|Dot1l-205_4= (i.e. these exons overlap). To resolve this, we duplicate the row for each overlapping exon, and reassign the exon value to that particular duplicate.
 
-    #+RESULTS:
-    : We expect 750 data lines in total
+* Aggregate all tables
 
-    Now let's cat them all together into one big matrix
+    Now let's cat them all together into one big table
 
     #+begin_src bash :var indir="fixed_dot1l_longformat" outfile="largemat/all.dot1l.longformat.tsv"
       mkdir -p $(dirname $outfile)
@@ -443,15 +511,17 @@ The number of columns for "Dot1L Isoform Specific Exon" can be determined in adv
     #+end_src
 
     #+RESULTS:
-    : 751 largemat/all.dot1l.longformat.tsv
+    : 1296 largemat/all.dot1l.longformat.tsv
+
+* Aggregate all tables (wide)
 
     And finally convert this into a wide format, so that a single line is a library-barcode and columns are all possible isoform_exon combos (there should not be so many)
 
-    #+begin_src R :session rare
+    #+begin_src R  :session rare
       library(tidyr)
       library(dplyr)
       ##
-      tab <- read.table(matfilename, header=T)
+      tab <- read.table("largemat/all.dot1l.longformat.tsv", header=T)
 
       ## transcript level wide matrix
       ## we ignore individual exons
@@ -463,9 +533,19 @@ The number of columns for "Dot1L Isoform Specific Exon" can be determined in adv
       trans.wide[is.na(trans.wide)] <- 0
 
       ## 
-      exon.mat <- tab %>%
+      exon.wide <- tab %>%
         mutate(trans.exon = paste(isoform, exonnum, sep=".")) %>%
-        select(c(library, barcode, trans.exon, ntrans))
+        select(c(library, barcode, trans.exon, ntrans)) %>%
+        group_by(library, barcode, trans.exon) %>%
+        summarise(total.trans= sum(ntrans)) %>%
+        spread(key=trans.exon, value=total.trans)
+      exon.wide[is.na(exon.wide)] <- 0
       ##
+      full.wide <- full_join(trans.wide, exon.wide, by=c("library"="library","barcode"="barcode"))
+      write.table(full.wide, file="largemat/all.dot1l.wideformat.tsv", quote=F, sep="\t", row.names = F)      
 
     #+end_src
+
+    #+RESULTS:
+
+    
