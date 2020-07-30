@@ -28,4 +28,6 @@ As per the official email, we have four deliverables:
     CLOSED: [2020-07-30 Thu 22:43]
 
     A WGCNA analysis was performed on the RaceID matrix, first on the highly variable genes of ~1500 genes, and then on the filtered genes of ~8000 genes. Given the size of these processed datasets, checkpoints were saved to the Galaxy History [[https://usegalaxy.eu/u/mehmet-tekman/h/adrian-salas-wgcna-tom-checkpoints][Adrian Salas WGCNA TOM Checkpoints]]. [[file:4_wgcna.ipynb][The notebook can be found here]].
+    The list of genes for each of the gene modules can be found (as grouped by colour) in [[file:files/4_wgcna/][files/4_wgcna/]].
     Given the complexity of the environment setup, the environment is also saved to this history under the name =wgcna.tar.gz= which should be unpacked to =~/miniconda/envs/wgcna= and enabled with =conda activate wgcna=.
+
