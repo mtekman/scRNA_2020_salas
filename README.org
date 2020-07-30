@@ -14,18 +14,18 @@ As per the official email, we have three deliverables:
 
 *** DONE 2. Append CRE recombinase expression to cells
   CLOSED: [2020-07-27 Mo 15:58]
-  
+
   Galaxy was used to map the cell reads against the transcriptome of the CRE transcript; two were used, one from NCBI and one from AddGene. The NCBI matrices detected CRE expression only in the K matrices, which was good. 141 cells were annotated to the metadata matrix that adrian provided. [[file:2_cre.org][Notebook is here]].
 
 *** DONE 3. Extract Dot1L expression into a metadata table
     CLOSED: [2020-07-29 Wed 06:44]
 
-    A small request to access the Dot1L expression in such a way that each count can be traced to a specific library and cell barcode. 
+    A small request to access the Dot1L expression in such a way that each count can be traced to a specific library and cell barcode.
     The result is two tables, one in long format and one in wide format, containing information about how many transcripts are detected in which isoform, or how many transcripts are detected in a particular exon of an isoform. [[file:3_dot1lmeta.org][Notebook is here]], and matrices are [[file:files/3_dot1lmeta/largemat/][here]].
 
 
-*** DOING 4. Perform WCGNA analysis
+*** DONE 4. Perform WCGNA analysis
+    CLOSED: [2020-07-30 Thu 22:43]
 
-  Working on it.
-
-     
+    A WGCNA analysis was performed on the RaceID matrix, first on the highly variable genes of ~1500 genes, and then on the filtered genes of ~8000 genes. Given the size of these processed datasets, checkpoints were saved to the Galaxy History [[https://usegalaxy.eu/u/mehmet-tekman/h/adrian-salas-wgcna-tom-checkpoints][Adrian Salas WGCNA TOM Checkpoints]]. [[file:4_wgcna.ipynb][The notebook can be found here]].
+    Given the complexity of the environment setup, the environment is also saved to this history under the name =wgcna.tar.gz= which should be unpacked to =~/miniconda/envs/wgcna= and enabled with =conda activate wgcna=.
