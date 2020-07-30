@@ -5,7 +5,7 @@
 #+AUTHOR: Mehmet Tekman
 
 
-As per the official email, we have three deliverables:
+As per the official email, we have four deliverables:
 
 *** DONE 1. Explain the Dot1L plots
   CLOSED: [2020-07-23 Do 15:58]
