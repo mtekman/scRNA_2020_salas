@@ -171,9 +171,266 @@ dev.off()
 
  To add more to this would require really getting familiar with =image= which as far as I understand directly renders to a graphics object. We can add new graphics on top of this object by calling =image(..., add=T)= but we will have no guarantee that it will actually align.
 
-Ideally we wish to recover ggplot object that we can later combine with a grid. Some options might be to use the =gridGraphics= package to arrange plots, which [[https://stackoverflow.com/questions/15114347/to-display-two-heatmaps-in-same-pdf-side-by-side-in-r][apparently works with heatmap.2 as well]]
+ Ideally we wish to recover ggplot object that we can later combine with a grid. Some options might be to use the =gridGraphics= package to arrange plots, which [[https://stackoverflow.com/questions/15114347/to-display-two-heatmaps-in-same-pdf-side-by-side-in-r][apparently works with heatmap.2 as well]]
+ 
+** Attempt with gridGraphics
+
+   
+ #+begin_src R :session yes
+   library(gridGraphics)
+   library(grid)
+   library(gplots)
+   library(RColorBrewer)
+   mod.genes <- read.table("~/repos/_work/_scrna/scRNA_2020_salas/files/4_wgcna/genes_7477/module_black.txt")$V1
+   matrix.norm <- readRDS("~/Downloads/sc_object_RaceID.RDS")@ndata
+   mat = as.matrix(matrix.norm[mod.genes,])
+   heatmap.2(log2(t(mat)+1), dendrogram="column", scale="none", srtCol = 50, labRow = NA, 
+             key.title = "log2(x+1)", lwid = c(1,1,1), 
+             #key.ylab = NA, 
+             lmat = matrix(c(3,1,2,
+                             3,1,2,
+                             3,1,4), ncol=3), lhei= c(1,10,2), col=brewer.pal(9,"BuPu"))
+
+   ## not clear why this needs to be called again
+   library(gridGraphics)
+   grab_grob <- function(){
+     grid.echo()
+     grid.grab()
+   }
+
+   g <- grab_grob()
+   grid.newpage()
+
+   lay <- grid.layout(nrow = 1, ncol=2)
+   pushViewport(viewport(layout = lay))
+   grid.draw(editGrob(g, vp=viewport(layout.pos.row = 1, 
+                                     layout.pos.col = 1, clip=TRUE)))
+   grid.draw(editGrob(g, vp=viewport(layout.pos.row = 1, 
+                                     layout.pos.col = 2, clip=TRUE)))
+   upViewport(1)
+ #+end_src
+
+ #+RESULTS:
+ | gridGraphics |
+ | grid         |
+ | stats        |
+ | graphics     |
+ | grDevices    |
+ | utils        |
+ | datasets     |
+ | methods      |
+ | base         |
 
 
+ It looks like the grab_grob() refuses to capture the current graphical output, we should explore the ggplot2 options. The only real benefit of this heatmap is the dendrogram at the top, but we can generate that using regular hclust.
+
+** Attempt with ggplot2
+
+   One possible solution is to use the ggdendro package to produce [[https://stackoverflow.com/questions/6673162/reproducing-lattice-dendrogram-graph-with-ggplot2][something similar]], where we essentially compute the dendrogram first and then use that as row ordering for the heatmap.
+
+   #+begin_src R :session yes
+     library(ggplot2)
+     library(reshape2)
+     library(ggdendro)
+     library(cowplot) ## plot_grid
+
+     newmat <- t(mat) ##[,1:100])
+     x <- as.matrix(newmat) # scale(newmat))
+     dd.col <- as.dendrogram(hclust(dist(x)))
+     col.ord <- order.dendrogram(dd.col)
+
+     dd.row <- as.dendrogram(hclust(dist(t(x))))
+     row.ord <- order.dendrogram(dd.row)
+
+     xx <- scale(newmat)[col.ord, row.ord]
+     xx_names <- attr(xx, "dimnames")
+     df <- as.data.frame(xx)
+     colnames(df) <- xx_names[[2]]
+     df$cells <- xx_names[[1]]
+     df$cells <- with(df, factor(cells, levels=cells, ordered=TRUE))
+
+     mdf <- melt(df, id.vars="cells")
+
+     ddata_x <- dendro_data(dd.row)
+
+     ## This breaks for large number of cells due to
+     ## the "node stack overflow" error which means that
+     ## there are just too many leaves in the tree to
+     ## plot and many share overlapping positions.
+     ## -- luckily we only need the ordering of the cells
+     ##    and not the dendrogram
+     ##
+     ddata_y <- dendro_data(dd.col)
+
+     ### Set up a blank theme
+     theme_none <- theme(
+       panel.grid.major = element_blank(),
+       panel.grid.minor = element_blank(),
+       panel.background = element_blank(),
+       axis.title.x = element_text(colour=NA),
+       axis.title.y = element_blank(),
+       axis.text.x = element_blank(),
+       axis.text.y = element_blank(),
+       axis.line = element_blank()
+       axis.ticks.length = element_blank(),
+       plot.margin=unit(c(0,0,0,0), "mm")
+     )
+
+     ### Create plot components ###    
+     # Heatmap
+     p1 <- ggplot(mdf, aes(x=variable, y=cells)) + 
+       geom_tile(aes(fill=value)) + scale_fill_gradient2() +
+       theme(legend.position="none",
+             axis.text.x = element_text(angle = 50, hjust=0.95))
+
+     # Dendrogram TOP/GENES
+     p2 <- ggplot(segment(ddata_x)) + 
+       geom_segment(aes(x=x, y=y, xend=xend, yend=yend)) +
+       theme_none + theme(axis.title.x=element_blank())
+
+     # Dendrogram RIGHT/CELLS
+     p3 <- ggplot(segment(ddata_y)) + 
+       geom_segment(aes(x=x, y=y, xend=xend, yend=yend)) + 
+       coord_flip() + theme_none
+
+     # Place
+     grid.newpage()
+     print(p1, vp=viewport(0.8, 0.85, x=0.4, y=0.4))
+     print(p2, vp=viewport(0.8, 0.15, x=0.425, y=0.9))
+   #+end_src
+
+   So the heatmap is a little bit strange looking, but the alignment is on the whole there.
+
+* Cell Plots
+
+  So now let's try to create the plots on the left, which we will extract from the ordering as before -- this time plotting with ggplot2.
+
+  #+begin_src R :session yes
+    cells.ordered <- xx_names[[1]][col.ord]
+    cells.iscase <- grepl("^K", cells.ordered)
+    cells.color <- sapply(cells.iscase, function(x) if (x) "red" else "blue")
+    cells.df <- data.frame(names=cells.ordered, color=cells.color, height=100)  ## all have the same 
+
+    # burn the ordering into the geom_bar
+    cells.df$names <- factor(cells.df$names, levels = cells.df$names)
+
+    p4 <- ggplot(cells.df[1:100,], aes(x=names, y=height, fill=color, width=0.6)) +  ## fiddle with width for clearer cell borders
+      geom_bar(stat='identity') + coord_flip() +
+      theme(axis.title.x = element_blank(), axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+            legend.position="none", plot.margin=unit(c(0,0,0,0), "mm")) +
+      scale_y_continuous(expand = c(0, 0), limits = c(0, 100))  # no grey space above or below
+
+  #+end_src
+
+  #+RESULTS:
+
+  And now to combine the cell plots with heatmap
+
+  #+begin_src R :session yes  
+    # Place
+    grid.newpage()
+    print(p1, vp=viewport(0.8, 0.85, x=0.5, y=0.4))
+    print(p2, vp=viewport(0.8, 0.15, x=0.525, y=0.9))
+    print(p4, vp=viewport(0.1, 0.75, x=0.05, y=0.445))
+  #+end_src
+
+  #+RESULTS:
+
+* Combine Cell Plots and Heatmap
+
+  Let's turn this into an all-in-one function in order to make the cell labels match exact.
+
+  #+begin_src R :session yes  
+    library(ggplot2)
+    library(reshape2)
+    library(ggdendro)
+    library(cowplot) ## plot_grid
+
+    newmat <- t(mat) ##[,1:100])
+    x <- as.matrix(newmat) # scale(newmat))
+    dd.col <- as.dendrogram(hclust(dist(x)))
+    col.ord <- order.dendrogram(dd.col)
+
+    dd.row <- as.dendrogram(hclust(dist(t(x))))
+    row.ord <- order.dendrogram(dd.row)
+
+    xx <- scale(newmat)[col.ord, row.ord]
+    xx_names <- attr(xx, "dimnames")
+    df <- as.data.frame(xx)
+    colnames(df) <- xx_names[[2]]
+    df$cells <- xx_names[[1]]
+    df$cells <- with(df, factor(cells, levels=cells, ordered=TRUE))
+
+    mdf <- melt(df, id.vars="cells")
+
+    ddata_x <- dendro_data(dd.row)
+
+    ## This breaks for large number of cells due to
+    ## the "node stack overflow" error which means that
+    ## there are just too many leaves in the tree to
+    ## plot and many share overlapping positions.
+    ## -- luckily we only need the ordering of the cells
+    ##    and not the dendrogram
+    ##
+    ##ddata_y <- dendro_data(dd.col)
+
+    ### Set up a blank theme
+    theme_none <- theme(
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank(),
+      panel.background = element_blank(),
+      axis.title.x = element_text(colour=NA),
+      axis.title.y = element_blank(),
+      axis.text.x = element_blank(),
+      axis.text.y = element_blank(),
+      axis.line = element_blank(),
+      ##axis.ticks.length = element_blank(),
+      plot.margin=unit(c(0,0,0,0), "mm")
+    )
+
+    ### Create plot components ###    
+    # Heatmap
+    p1 <- ggplot(mdf, aes(x=variable, y=cells)) + 
+      geom_tile(aes(fill=value)) + scale_fill_gradient2() +
+      theme(legend.position="none",
+            axis.text.x = element_text(angle = 50, hjust=0.95))
+
+    # Dendrogram TOP/GENES
+    p2 <- ggplot(segment(ddata_x)) + 
+      geom_segment(aes(x=x, y=y, xend=xend, yend=yend)) +
+      theme_none + theme(axis.title.x=element_blank())
+
+    # Dendrogram RIGHT/CELLS
+    #p3 <- ggplot(segment(ddata_y)) +
+    #  geom_segment(aes(x=x, y=y, xend=xend, yend=yend)) + 
+    #  coord_flip() + theme_none
+
+    cells.ordered <- xx_names[[1]][col.ord]
+    cells.iscase <- grepl("^K", cells.ordered)
+    cells.color <- sapply(cells.iscase, function(x) if (x) "red" else "blue")
+    cells.df <- data.frame(names=cells.ordered, color=cells.color, height=100)  ## all have the same 
+
+    # burn the ordering into the geom_bar
+    cells.df$names <- factor(cells.df$names, levels = cells.df$names)
+
+    p4 <- ggplot(cells.df, aes(x=names, y=height, fill=color, width=0.6)) +  ## fiddle with width for clearer cell borders
+      geom_bar(stat='identity') + coord_flip() +
+      theme(axis.title.x = element_blank(), axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+            legend.position="none", plot.margin=unit(c(0,0,0,0), "mm")) +
+      scale_y_continuous(expand = c(0, 0), limits = c(0, 100))  # no grey space above or below
 
 
+    grid.newpage()
+    print(p1, vp=viewport(0.8, 0.85, x=0.5, y=0.4))
+    print(p2, vp=viewport(0.8, 0.15, x=0.525, y=0.9))
+    print(p4, vp=viewport(0.1, 0.75, x=0.05, y=0.445))
+  #+end_src
 
+  Looks good!
+
+  Next steps:
+ 1. Incorporate the silhoutte plot looking thing for the module we have chosen
+    + Is this a rowSums expression plot of the scaled matrix? (Explaining why half the values are negative?)
+ 2. Add labels
+ 3. Add plots for the top 3 genes (with the opportunity to override)
+ 4. Stick all into self-contained function.
