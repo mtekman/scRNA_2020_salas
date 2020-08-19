@@ -341,10 +341,16 @@ dev.off()
   Let's turn this into an all-in-one function in order to make the cell labels match exact.
 
   #+begin_src R :session yes  
+    library(RaceID)
+    library(grid)
     library(ggplot2)
     library(reshape2)
     library(ggdendro)
     library(cowplot) ## plot_grid
+
+    mod.genes <- read.table("~/repos/_work/_scrna/scRNA_2020_salas/files/4_wgcna/genes_7477/module_black.txt")$V1
+    matrix.norm <- readRDS("~/Downloads/sc_object_RaceID.RDS")@ndata
+    mat = as.matrix(matrix.norm[mod.genes,])
 
     newmat <- t(mat) ##[,1:100])
     x <- as.matrix(newmat) # scale(newmat))
@@ -354,7 +360,7 @@ dev.off()
     dd.row <- as.dendrogram(hclust(dist(t(x))))
     row.ord <- order.dendrogram(dd.row)
 
-    xx <- scale(newmat)[col.ord, row.ord]
+    xx <- scale(log2(newmat+1))[col.ord, row.ord] ## this looks broken, but isnt
     xx_names <- attr(xx, "dimnames")
     df <- as.data.frame(xx)
     colnames(df) <- xx_names[[2]]
@@ -426,6 +432,8 @@ dev.off()
     print(p4, vp=viewport(0.1, 0.75, x=0.05, y=0.445))
   #+end_src
 
+  #+RESULTS:
+
   Looks good!
 
   Next steps:
@@ -434,3 +442,378 @@ dev.off()
  2. Add labels
  3. Add plots for the top 3 genes (with the opportunity to override)
  4. Stick all into self-contained function.
+
+
+* Silhouette Plot
+
+  If we assume that the scale is a bar chart of the total rowsum expression of that cell.
+
+  #+begin_src R :session yes
+    tmpin <- xx
+    module.exp <- data.frame(names=rownames(tmpin), rsums=rowSums(tmpin))
+    # burn the same ordering as before
+    module.exp$names <- factor(module.exp$names, levels = module.exp$names[col.ord])
+    module.exp$rsums <- log2(module.exp$rsums + 1)
+
+    ## fiddle with width for clearer cell borders
+    p5 <- ggplot(module.exp, aes(x=names, y=rsums, width=0.6)) +
+      geom_bar(stat='identity', fill="grey") + coord_flip() +
+      theme(axis.title.x = element_blank(),
+            axis.text.x = element_blank(),
+            axis.title.y = element_blank(),
+            axis.ticks.x = element_blank(),
+            legend.position="none",
+            plot.margin=unit(c(0,0,0,0), "mm"))
+  #+end_src
+
+  #+RESULTS:
+
+* Connecting the Silhoutte Plot to the rest
+
+
+  #+begin_src R :session yes
+    library(RaceID)
+    library(grid)
+    library(ggplot2)
+    library(reshape2)
+    library(ggdendro)
+    library(cowplot) ## plot_grid
+
+    mod.genes <- read.table("~/repos/_work/_scrna/scRNA_2020_salas/files/4_wgcna/genes_7477/module_black.txt")$V1
+    matrix.norm <- readRDS("~/Downloads/sc_object_RaceID.RDS")@ndata
+    mat = as.matrix(matrix.norm[mod.genes,])
+
+    newmat <- t(mat[,sample(1:ncol(mat), 100)])
+    x <- as.matrix(newmat) # scale(newmat))
+    dd.col <- as.dendrogram(hclust(dist(x)))
+    col.ord <- order.dendrogram(dd.col)
+
+    dd.row <- as.dendrogram(hclust(dist(t(x))))
+    row.ord <- order.dendrogram(dd.row)
+
+    xx <- log2(newmat+1)[col.ord, row.ord] ## this looks broken, but isnt
+    xx_names <- attr(xx, "dimnames")
+    df <- as.data.frame(xx)
+    colnames(df) <- xx_names[[2]]
+    df$cells <- xx_names[[1]]
+    df$cells <- with(df, factor(cells, levels=cells, ordered=TRUE))
+
+    mdf <- melt(df, id.vars="cells")
+
+    ddata_x <- dendro_data(dd.row)
+
+    ## This breaks for large number of cells due to
+    ## the "node stack overflow" error which means that
+    ## there are just too many leaves in the tree to
+    ## plot and many share overlapping positions.
+    ## -- luckily we only need the ordering of the cells
+    ##    and not the dendrogram
+    ##
+    ##ddata_y <- dendro_data(dd.col)
+
+    ### Set up a blank theme
+    theme_none <- theme(
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank(),
+      panel.background = element_blank(),
+      axis.title.x = element_text(colour=NA),
+      axis.title.y = element_blank(),
+      axis.text.x = element_blank(),
+      axis.text.y = element_blank(),
+      axis.line = element_blank(),
+      ##axis.ticks.length = element_blank(),
+      plot.margin=unit(c(0,0,0,0), "mm")
+    )
+
+    ### Create plot components ###    
+    # Heatmap
+    p.heatmap <- ggplot(mdf, aes(x=variable, y=cells)) + 
+      geom_tile(aes(fill=value)) + scale_fill_gradient2() +
+      theme(legend.position="none",
+            axis.text.x = element_text(angle = 50, hjust=0.95),
+            axis.title.y = element_blank())
+
+    # Dendrogram TOP/GENES
+    p.topdendro <- ggplot(segment(ddata_x)) + 
+      geom_segment(aes(x=x, y=y, xend=xend, yend=yend)) +
+      theme_none + theme(axis.title.x=element_blank())
+
+    # Dendrogram RIGHT/CELLS
+    #p3 <- ggplot(segment(ddata_y)) +
+    #  geom_segment(aes(x=x, y=y, xend=xend, yend=yend)) + 
+    #  coord_flip() + theme_none
+
+    cells.ordered <- xx_names[[1]]  ##[col.ord] -- already ordered
+    cells.iscase <- grepl("^K", cells.ordered)
+    cells.color <- sapply(cells.iscase, function(x) if (x) "red" else "blue")
+    cells.df <- data.frame(names=cells.ordered, color=cells.color, height=100)  ## all have the same 
+
+    # burn the ordering into the geom_bar
+    cells.df$names <- factor(cells.df$names, levels = cells.df$names)
+
+    ## Cell Bar
+    p.cellbar <- ggplot(cells.df, aes(x=names, y=height, fill=color, width=0.6)) +  ## fiddle with width for clearer cell borders
+      geom_bar(stat='identity') + coord_flip() +
+      theme(axis.title.x = element_blank(), axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+            legend.position="none", plot.margin=unit(c(0,0,0,0), "mm")) +
+      scale_y_continuous(expand = c(0, 0), limits = c(0, 100))  # no grey space above or below
+
+
+    tmpin <- xx
+    module.exp <- data.frame(names=rownames(tmpin), rsums=rowSums(tmpin))
+    ## burn the same ordering as before
+    module.exp$names <- factor(module.exp$names, levels=cells.ordered)
+    module.exp$rsums <- log2(module.exp$rsums + 1)
+
+    ## fiddle with width for clearer cell borders
+    p.expr <- ggplot(module.exp, aes(x=names, y=rsums, width=0.6)) +
+      geom_bar(stat='identity', fill="grey") + coord_flip() +
+      theme(axis.title.x = element_blank(),
+            axis.text.x = element_blank(),
+            axis.title.y = element_blank(),
+            axis.ticks.x = element_blank(),
+            legend.position="none",
+            plot.margin=unit(c(0,0,0,0), "mm"))
+
+    # the idea is to leave enough spaces to see the names (and thus check the ordering)
+    # and then to just be able to crop out the redundant pieces in the final piece
+    width.heatmap = 0.7
+    height.cells = 0.75
+    width.cells = 0.07
+    width.sums = 0.1
+    start.left = 0.05
+    start.left.heatmap = 0.555
+    start.bottom = 0.445
+    horiz.space = 0.005
+
+    grid.newpage()
+    print(p.cellbar, vp=viewport(width.cells, height.cells,
+                          x = start.left, 
+                          y = start.bottom))
+    print(p.expr, vp=viewport(width.sums, height.cells,
+                          x = start.left + width.cells + horiz.space + 0.03, 
+                          y = start.bottom))
+    print(p.heatmap, vp=viewport(width.heatmap, height.cells + 0.1,
+                          x = start.left.heatmap + horiz.space, 
+                          y = 0.4))
+    print(p.topdendro, vp=viewport(width.heatmap, width.cells + 0.05, 
+                          x = start.left.heatmap + 0.02 + horiz.space, 
+                          y = 0.9))
+
+  #+end_src
+
+  #+RESULTS:
+
+* Add the gene expression plots
+
+ For the top 3 genes in the cluster, plot their expression, and colour by condition.
+
+  #+begin_src R :session yes
+    top.genes3 <- names(head(sort(colSums(newmat), decreasing = T), 3))
+    exp.genes3 <- newmat[,top.genes3]
+    exp.g3.melt <- melt(exp.genes3)
+    colnames(exp.g3.melt) <- c("Cell", "Gene", "value")
+    exp.g3.melt$Cell <- factor(exp.g3.melt$Cell, levels=cells.ordered)
+    exp.g3.melt$condition <- factor(
+      sapply(grepl("^K", exp.g3.melt$Cell),
+             function(x) if (x) "red" else "blue"), levels=c("red","blue"))
+
+    p.top3 <- ggplot(exp.g3.melt, aes(x=Cell, y=value, width=0.6, fill=condition)) +
+      geom_bar(stat='identity') + coord_flip()
+
+    p.t3.facet <- p.top3 + facet_wrap(~Gene, ncol=3) +
+      theme(axis.title.x = element_blank(),
+            ##axis.text.x = element_blank(),
+            ##axis.line.x = element_line(colour = "black", size = 1, linetype = "solid"),
+            axis.title.y = element_blank(),
+            panel.background = element_blank(),
+            legend.position="none",
+            plot.margin=unit(c(0,0,0,0), "mm"))
+  #+end_src
+
+  #+RESULTS:
+
+  Nice, let's combine this with the main
+
+* All Plots Together
+
+  We now have all the components we need.
+
+  #+begin_src R :session yes
+    library(RaceID)
+    library(grid)
+    library(ggplot2)
+    library(reshape2)
+    library(ggdendro)
+    library(cowplot) ## plot_grid
+
+    mod.genes <- read.table("~/repos/_work/_scrna/scRNA_2020_salas/files/4_wgcna/genes_7477/module_black.txt")$V1
+    matrix.norm <- readRDS("~/Downloads/sc_object_RaceID.RDS")@ndata
+    mat = as.matrix(matrix.norm[mod.genes,])
+
+    newmat <- t(mat[,sample(1:ncol(mat), 100)])
+    x <- as.matrix(newmat) # scale(newmat))
+    dd.col <- as.dendrogram(hclust(dist(x)))
+    col.ord <- order.dendrogram(dd.col)
+
+    dd.row <- as.dendrogram(hclust(dist(t(x))))
+    row.ord <- order.dendrogram(dd.row)
+
+    xx <- log2(newmat+1)[col.ord, row.ord] ## this looks broken, but isnt
+    xx_names <- attr(xx, "dimnames")
+    df <- as.data.frame(xx)
+    colnames(df) <- xx_names[[2]]
+    df$cells <- xx_names[[1]]
+    df$cells <- with(df, factor(cells, levels=cells, ordered=TRUE))
+
+    mdf <- melt(df, id.vars="cells")
+
+    ddata_x <- dendro_data(dd.row)
+
+    ## This breaks for large number of cells due to
+    ## the "node stack overflow" error which means that
+    ## there are just too many leaves in the tree to
+    ## plot and many share overlapping positions.
+    ## -- luckily we only need the ordering of the cells
+    ##    and not the dendrogram
+    ##
+    ##ddata_y <- dendro_data(dd.col)
+
+    ### Set up a blank theme
+    theme_none <- theme(
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank(),
+      panel.background = element_blank(),
+      axis.title.x = element_text(colour=NA),
+      axis.title.y = element_blank(),
+      axis.text.x = element_blank(),
+      axis.text.y = element_blank(),
+      axis.line = element_blank(),
+      ##axis.ticks.length = element_blank(),
+      plot.margin=unit(c(0,0,0,0), "mm")
+    )
+
+    ### Create plot components ###    
+    # Heatmap
+    p.heatmap <- ggplot(mdf, aes(x=variable, y=cells)) + 
+      geom_tile(aes(fill=value)) + scale_fill_gradient2() +
+      theme(legend.position="none",
+            axis.text.x = element_text(angle = 50, hjust=0.95),
+            axis.title.y = element_blank())
+
+    # Dendrogram TOP/GENES
+    p.topdendro <- ggplot(segment(ddata_x)) + 
+      geom_segment(aes(x=x, y=y, xend=xend, yend=yend)) +
+      theme_none + theme(axis.title.x=element_blank())
+
+    # Dendrogram RIGHT/CELLS
+    #p3 <- ggplot(segment(ddata_y)) +
+    #  geom_segment(aes(x=x, y=y, xend=xend, yend=yend)) + 
+    #  coord_flip() + theme_none
+
+    cells.ordered <- xx_names[[1]]  ##[col.ord] -- already ordered
+    cells.iscase <- grepl("^K", cells.ordered)
+    cells.color <- sapply(cells.iscase, function(x) if (x) "red" else "blue")
+    cells.df <- data.frame(names=cells.ordered, color=cells.color, height=100)  ## all have the same 
+
+    # burn the ordering into the geom_bar
+    cells.df$names <- factor(cells.df$names, levels = cells.df$names)
+
+    ## Cell Bar
+    p.cellbar <- ggplot(cells.df, aes(x=names, y=height, fill=color, width=0.6)) +  ## fiddle with width for clearer cell borders
+      geom_bar(stat='identity') + coord_flip() +
+      theme(axis.title.x = element_blank(), axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+            legend.position="none", plot.margin=unit(c(0,0,0,0), "mm")) +
+      scale_y_continuous(expand = c(0, 0), limits = c(0, 100))  # no grey space above or below
+
+
+    tmpin <- xx
+    module.exp <- data.frame(names=rownames(tmpin), rsums=rowSums(tmpin))
+    ## burn the same ordering as before
+    module.exp$names <- factor(module.exp$names, levels=cells.ordered)
+    module.exp$rsums <- log2(module.exp$rsums + 1)
+
+    ## fiddle with width for clearer cell borders
+    p.expr <- ggplot(module.exp, aes(x=names, y=rsums, width=0.6)) +
+      geom_bar(stat='identity', fill="grey") + coord_flip() +
+      theme(axis.title.x = element_blank(),
+            axis.text.x = element_blank(),
+            axis.title.y = element_blank(),
+            axis.ticks.x = element_blank(),
+            panel.background = element_blank(),        
+            legend.position="none",
+            plot.margin=unit(c(0,0,0,0), "mm"))
+
+
+
+    top.genes3 <- names(head(sort(colSums(newmat), decreasing = T), 3))
+    exp.genes3 <- newmat[,top.genes3]
+    exp.g3.melt <- melt(exp.genes3)
+    colnames(exp.g3.melt) <- c("Cell", "Gene", "value")
+    exp.g3.melt$Cell <- factor(exp.g3.melt$Cell, levels=cells.ordered)
+    exp.g3.melt$condition <- factor(
+      sapply(grepl("^K", exp.g3.melt$Cell),
+             function(x) if (x) "red" else "blue"), levels=c("red","blue"))
+
+    p.top3 <- ggplot(exp.g3.melt, aes(x=Cell, y=value, width=0.6, fill=condition)) +
+      geom_bar(stat='identity') + coord_flip()
+
+    ## some issues here:
+    ## - we cannot include the axis labels because it messes up the scaling.
+    p.t3.facet <- p.top3 + facet_wrap(~Gene, ncol=3) +
+      theme(axis.title.x = element_blank(),
+            ##axis.text.x = element_blank(),
+            ##axis.line.x = element_line(colour = "black", size = 1, linetype = "solid"),
+            axis.title.y = element_blank(),
+            panel.background = element_blank(),
+            legend.position="none",
+            plot.margin=unit(c(0,0,0,0), "mm"))
+
+
+
+    ## the idea is to leave enough spaces to see the names (and thus check the ordering)
+    ## and then to just be able to crop out the redundant pieces in the final piece
+    ##
+    ## - THESE VALUES ONLY WORK ON A VIEWPORT WITH ASPECT RATIO: 1920x1200 (or 8:5), e.g 960x600
+    ##
+    width.heatmap = 0.7
+    height.cells = 0.75
+    width.cells = 0.07
+    width.sums = 0.1
+    start.left = 0.04
+    start.left.heatmap = 0.25
+    start.bottom = 0.09
+    horiz.space = 0.005
+    ##
+    grid.newpage()
+    print(p.cellbar, vp=viewport(width=width.cells, height=height.cells,
+                          x = start.left, 
+                          y = start.bottom,
+                          just=c(0,0) ))
+    print(p.expr, vp=viewport(width=width.sums, height=height.cells,
+                          x = start.left + width.cells + horiz.space + 0.03, 
+                          y = start.bottom,
+                          just=c(0,0) ))
+    print(p.heatmap, vp=viewport(width=width.heatmap, height=height.cells * 1.125,
+                          x = start.left.heatmap + horiz.space,
+                          y = start.bottom * 0.025,
+                          just=c(0,0) ))
+    print(p.topdendro, vp=viewport(width=width.heatmap, height=width.cells + 0.05, 
+                          x = start.left.heatmap + 0.02 + horiz.space, 
+                          y = 0.9,
+                          just=c(0,0) ))
+    print(p.t3.facet, vp=viewport(0.4, height.cells + 0.038,  ## wow this scaling is exact...
+                          x = 0.88,
+                          y = start.bottom - 0.015,
+                          just=c(0,0) ))
+  #+end_src  
+
+  Looking better, but it seems that the viewport does not scale very well when plotted with different aspect ratios. I guess we just pick a default aspect and use that for everything.
+
+  #+begin_src R :session yes
+    tab <- readRDS("~/Downloads/sc_object_RaceID.RDS")
+    saveRDS(c(tab@ndata, tab@expdata), "files/6_checkpoints/ndata_expdata.rds")
+  #+end_src
+
+  #+RESULTS:
+
