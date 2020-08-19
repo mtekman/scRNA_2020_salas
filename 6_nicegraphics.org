@@ -648,11 +648,19 @@ dev.off()
     library(cowplot) ## plot_grid
 
     mod.genes <- read.table("~/repos/_work/_scrna/scRNA_2020_salas/files/4_wgcna/genes_7477/module_black.txt")$V1
-    matrix.norm <- readRDS("~/Downloads/sc_object_RaceID.RDS")@ndata
+    ##matrix.norm <- readRDS("~/Downloads/sc_object_RaceID.RDS")@ndata
+    tmp <- readRDS("~/Downloads/ndata_expdata.rds")
+    matrix.norm <- tmp[[1]]
+    matrix.expdata <- tmp[[2]]
+
     mat = as.matrix(matrix.norm[mod.genes,])
+    matEx = as.matrix(matrix.expdata[mod.genes,])
 
     newmat <- t(mat[,sample(1:ncol(mat), 100)])
+    newmatEx <- t(matEx[,rownames(newmat)])
+
     x <- as.matrix(newmat) # scale(newmat))
+    xEx <- as.matrix(newmatEx)
     dd.col <- as.dendrogram(hclust(dist(x)))
     col.ord <- order.dendrogram(dd.col)
 
@@ -660,13 +668,20 @@ dev.off()
     row.ord <- order.dendrogram(dd.row)
 
     xx <- log2(newmat+1)[col.ord, row.ord] ## this looks broken, but isnt
+    xxEx <- log2(newmatEx+1)[col.ord, row.ord]
     xx_names <- attr(xx, "dimnames")
+    xxEx_names <- attr(xxEx, "dimnames")
     df <- as.data.frame(xx)
+    dfEx <- as.data.frame(xxEx)
     colnames(df) <- xx_names[[2]]
+    colnames(dfEx) <- xxEx_names[[2]]
     df$cells <- xx_names[[1]]
     df$cells <- with(df, factor(cells, levels=cells, ordered=TRUE))
+    dfEx$cells <- xxEx_names[[1]]
+    dfEx$cells <- with(dfEx, factor(cells, levels=cells, ordered=TRUE))
 
     mdf <- melt(df, id.vars="cells")
+    mdfEx <- melt(dfEx, id.vars="cells")
 
     ddata_x <- dendro_data(dd.row)
 
@@ -693,28 +708,29 @@ dev.off()
       plot.margin=unit(c(0,0,0,0), "mm")
     )
 
-    ### Create plot components ###    
+    ### Create plot components ###
     # Heatmap
-    p.heatmap <- ggplot(mdf, aes(x=variable, y=cells)) + 
+    p.heatmap <- ggplot(mdf, aes(x=variable, y=cells)) +
       geom_tile(aes(fill=value)) + scale_fill_gradient2() +
       theme(legend.position="none",
             axis.text.x = element_text(angle = 50, hjust=0.95),
             axis.title.y = element_blank())
 
     # Dendrogram TOP/GENES
-    p.topdendro <- ggplot(segment(ddata_x)) + 
+    p.topdendro <- ggplot(segment(ddata_x)) +
       geom_segment(aes(x=x, y=y, xend=xend, yend=yend)) +
-      theme_none + theme(axis.title.x=element_blank())
+      theme_none + theme(axis.title.x=element_blank(),
+                         axis.ticks = element_blank())
 
     # Dendrogram RIGHT/CELLS
     #p3 <- ggplot(segment(ddata_y)) +
-    #  geom_segment(aes(x=x, y=y, xend=xend, yend=yend)) + 
+    #  geom_segment(aes(x=x, y=y, xend=xend, yend=yend)) +
     #  coord_flip() + theme_none
 
     cells.ordered <- xx_names[[1]]  ##[col.ord] -- already ordered
     cells.iscase <- grepl("^K", cells.ordered)
     cells.color <- sapply(cells.iscase, function(x) if (x) "red" else "blue")
-    cells.df <- data.frame(names=cells.ordered, color=cells.color, height=100)  ## all have the same 
+    cells.df <- data.frame(names=cells.ordered, color=cells.color, height=100)  ## all have the same
 
     # burn the ordering into the geom_bar
     cells.df$names <- factor(cells.df$names, levels = cells.df$names)
@@ -723,7 +739,8 @@ dev.off()
     p.cellbar <- ggplot(cells.df, aes(x=names, y=height, fill=color, width=0.6)) +  ## fiddle with width for clearer cell borders
       geom_bar(stat='identity') + coord_flip() +
       theme(axis.title.x = element_blank(), axis.text.x = element_blank(), axis.ticks.x = element_blank(),
-            legend.position="none", plot.margin=unit(c(0,0,0,0), "mm")) +
+            axis.ticks.y = element_blank(),
+            legend.position="none", plot.margin=unit(c(0,0,0,0), "mm"), panel.background = element_blank()) +
       scale_y_continuous(expand = c(0, 0), limits = c(0, 100))  # no grey space above or below
 
 
@@ -740,14 +757,14 @@ dev.off()
             axis.text.x = element_blank(),
             axis.title.y = element_blank(),
             axis.ticks.x = element_blank(),
-            panel.background = element_blank(),        
+            panel.background = element_blank(),
             legend.position="none",
             plot.margin=unit(c(0,0,0,0), "mm"))
 
 
 
-    top.genes3 <- names(head(sort(colSums(newmat), decreasing = T), 3))
-    exp.genes3 <- newmat[,top.genes3]
+    top.genes3 <- names(head(sort(colSums(newmatEx), decreasing = T), 3))
+    exp.genes3 <- log2(newmat+1)[,top.genes3]
     exp.g3.melt <- melt(exp.genes3)
     colnames(exp.g3.melt) <- c("Cell", "Gene", "value")
     exp.g3.melt$Cell <- factor(exp.g3.melt$Cell, levels=cells.ordered)
@@ -764,6 +781,7 @@ dev.off()
       theme(axis.title.x = element_blank(),
             ##axis.text.x = element_blank(),
             ##axis.line.x = element_line(colour = "black", size = 1, linetype = "solid"),
+            axis.ticks.y = element_blank(),
             axis.title.y = element_blank(),
             panel.background = element_blank(),
             legend.position="none",
@@ -776,37 +794,42 @@ dev.off()
     ##
     ## - THESE VALUES ONLY WORK ON A VIEWPORT WITH ASPECT RATIO: 1920x1200 (or 8:5), e.g 960x600
     ##
-    width.heatmap = 0.7
+    width.heatmap = 0.6
     height.cells = 0.75
     width.cells = 0.07
-    width.sums = 0.1
-    start.left = 0.04
-    start.left.heatmap = 0.25
+    width.sums = 0.08
+    start.left = 0
+    start.left.heatmap = 0.18
     start.bottom = 0.09
     horiz.space = 0.005
     ##
+    svg("test.svg", 22,15)
     grid.newpage()
     print(p.cellbar, vp=viewport(width=width.cells, height=height.cells,
-                          x = start.left, 
+                          x = start.left,
                           y = start.bottom,
                           just=c(0,0) ))
     print(p.expr, vp=viewport(width=width.sums, height=height.cells,
-                          x = start.left + width.cells + horiz.space + 0.03, 
+                          x = start.left + width.cells + horiz.space,
                           y = start.bottom,
                           just=c(0,0) ))
-    print(p.heatmap, vp=viewport(width=width.heatmap, height=height.cells * 1.125,
-                          x = start.left.heatmap + horiz.space,
-                          y = start.bottom * 0.025,
+    print(p.heatmap, vp=viewport(width=width.heatmap, height=height.cells * 1.1015,
+                          x = start.left.heatmap + horiz.space - 0.0347,
+                          y = start.bottom * 0.211,
                           just=c(0,0) ))
-    print(p.topdendro, vp=viewport(width=width.heatmap, height=width.cells + 0.05, 
-                          x = start.left.heatmap + 0.02 + horiz.space, 
-                          y = 0.9,
+    print(p.topdendro, vp=viewport(width=width.heatmap * 0.991, height=width.cells * 1.101,
+                          x = start.left.heatmap + 0.02 + horiz.space - 0.0347,
+                          y = 0.84,
                           just=c(0,0) ))
-    print(p.t3.facet, vp=viewport(0.4, height.cells + 0.038,  ## wow this scaling is exact...
-                          x = 0.88,
-                          y = start.bottom - 0.015,
+    print(p.t3.facet, vp=viewport(0.25, height.cells * 1.035,  ## wow this scaling is exact...
+                          x = 0.75,
+                          y = start.bottom - 0.01,
                           just=c(0,0) ))
+    dev.off()
   #+end_src  
+
+  #+RESULTS:
+  : 1
 
   Looking better, but it seems that the viewport does not scale very well when plotted with different aspect ratios. I guess we just pick a default aspect and use that for everything.
 
