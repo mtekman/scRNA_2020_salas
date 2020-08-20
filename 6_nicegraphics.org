@@ -848,28 +848,22 @@ dev.off()
     library(ggplot2)
     library(reshape2)
     library(ggdendro)
-    library(cowplot) ## plot_grid
-
-                                            # Read Expression and Normalised Data
-    mod.genes <- read.table("~/repos/_work/_scrna/scRNA_2020_salas/files/4_wgcna/genes_7477/module_black.txt")$V1
-    ##matrix.norm <- readRDS("~/Downloads/sc_object_RaceID.RDS")@ndata
-    tmp <- readRDS("~/Downloads/ndata_expdata.rds")
-    matrix.norm <- tmp[[1]]
-    matrix.expdata <- tmp[[2]]
-
+    #library(cowplot) ## plot_grid
+    library(dplyr)
 
     selectGenes <- function(matr, genelist){
       "Sub-select the matrix to a few genes"
-      return(as.matrix(matr[genelist,]))
+      return(as.matrix(matr)[genelist,])
     }
 
     subselectCells <- function(mat, num.pick, topN = FALSE){
       "For testing purposes, pick a few cells at random instead of the whole matrix. If topN is not 0, then pick num.pick from the most expressive cells."
       if (topN){
         dec.cells <- names(sort(colSums(mat), decreasing = T))
-        return(head(match(dec.cells, colnames(mat)), topN))
+        return(head(dec.cells, num.pick))
+        ##return(head(match(dec.cells, colnames(mat)), num.pick))
       }
-      return(sample(1:ncol(mat), 100))
+      return(colnames(mat)[sample(1:ncol(mat), 100)])
     }
 
     makeDendrogram <- function(mat){
@@ -888,15 +882,11 @@ dev.off()
       return(cells.df)
     }
 
-    makeGExprPlotData <- function(mat, cells.ordered, do.log2=TRUE){
-      "Compute Log2 expression on an expression matrix "
-      mexp <- data.frame(names=rownames(mat), rsums=rowSums(mat))
-      ## burn the same ordering as before
-      mexp$names <- factor(mexp$names, levels=cells.ordered, ordered = T)
-      if (do.log2){
-        mexp$rsums <- log2(mexp$rsums + 1)
-      }
-      return(mexp)
+    makeGExprPlotData <- function(tab, cells.ordered, do.log2=TRUE){
+      "Input table must be a melted table generated from combineRawAndNormAndCondition."
+      sum.table <- tab %>% group_by(cells) %>% summarise(sum.raw = sum(value.raw),
+                                                         sum.norm = sum(value.norm))
+      return(sum.table)
     }
 
     meltMatrix <- function(xx){
@@ -909,59 +899,86 @@ dev.off()
       return(melt(df, id.vars="cells"))
     }
 
-    make3GenesData <- function(mat){
-      top.genes3 <- names(head(sort(colSums(mat), decreasing = T), 3))
-      exp.genes3 <- log2(mat+1)[,top.genes3]
-      exp.g3.melt <- melt(exp.genes3)
-      colnames(exp.g3.melt) <- c("Cell", "Gene", "value")
-      exp.g3.melt$Cell <- factor(exp.g3.melt$Cell, levels=cells.ordered)
-      exp.g3.melt$condition <- factor(
-        sapply(grepl("^K", exp.g3.melt$Cell),
-               function(x) if (x) "red" else "blue"), levels=c("red","blue"))
-      return(exp.g3.melt)
+    make3GenesData <- function(tab, three.genes = NULL){
+      "Input table must be a melted table generated from combineRawAndNormAndCondition. If three.genes is not NULL then we just subset by those genes"
+      if (is.null(three.genes)){
+        sum.table <- tab %>% group_by(variable) %>% summarise(sum.raw = sum(value.raw),
+                                                              sum.norm = sum(value.norm))
+        ##
+        topN.raw <- sum.table %>% arrange(desc(sum.raw)) %>% head(3) %>% select(variable)
+        topN.norm <- sum.table %>% arrange(desc(sum.norm)) %>% head(3) %>% select(variable)
+        ##
+        if (!all(topN.raw == topN.norm)){
+          print("Note: The top 3 expressive genes in the module in the raw data are not the same as those in the normalised data. Choosing to use the raw.")
+          print(cbind(topN.raw, topN.norm))
+        }
+        three.genes <- as.character(topN.norm$variable)
+      }
+      return(tab %>% filter(variable %in% three.genes))
     }
 
-    mat <- selectGenes(matrix.norm, mod.genes)
-    choose.cells <- subselectCells(mat, 100, TRUE)[2:100]
-    newmat <- t(mat[,choose.cells])
-    x <- as.matrix(newmat) # scale(newmat))
+    combineRawAndNormAndCondition <- function(rawmat, expmat){
+      "Take two matrices, melt them into tables and merge them on cells and genes"
+      rawtab <- meltMatrix(rawmat)
+      exptab <- meltMatrix(expmat)  
+      tab <- full_join(rawtab, exptab, by=c("cells","variable"), suffix = c(".raw", ".norm"))
+      tab$condition <- factor(sapply(grepl("^K", tab$cells),
+                                     function(x) if (x) "red" else "blue"),
+                              levels=c("red","blue"))
+      return(tab)
+    }
 
-                                            # Calculate Dendrogram
-    dd.col <- makeDendrogram(x)
-    dd.row <- makeDendrogram(t(x))
+    filterMatrix <- function(mat, mod.genes, cells.list = NULL){
+      "Produce a filtered matrices with the module genes and optionally by cells too."
+      mat2 <- selectGenes(mat, mod.genes)
+      if (is.null(cells.list)){
+        ## use all cells
+        transmat <- t(mat2)
+      } else {
+        transmat <- t(mat2[,cells.list])
+      }
+      x <- as.matrix(transmat) # scale(transmat)
+      return(x)
+    }
+
+                                            # Read Expression and Normalised Data
+    mod.genes <- read.table("~/repos/_work/_scrna/scRNA_2020_salas/files/4_wgcna/genes_7477/module_black.txt")$V1
+    ##matrix.norm <- readRDS("~/Downloads/sc_object_RaceID.RDS")@ndata
+    tmp <- readRDS("~/Downloads/ndata_expdata.rds")
+    matrix.norm <- tmp[[1]]
+    matrix.expr <- tmp[[2]]
+
+
+    ## Start by picking cells from a matrix
+    choose.cells <- subselectCells(matrix.expr, 100, TRUE)
+
+    x.norm <- filterMatrix(matrix.norm, mod.genes, choose.cells)
+    x.expr <- filterMatrix(matrix.expr, mod.genes, choose.cells)
+
+                                            # Calculate Dendrogram and get Cell and Gene Ordering
+    dd.col <- makeDendrogram(x.norm)
+    dd.row <- makeDendrogram(t(x.norm))
     col.ord <- order.dendrogram(dd.col)
     row.ord <- order.dendrogram(dd.row)
     ddata_x <- dendro_data(dd.row)
-    ##ddata_y <- dendro_data(dd.col) # breaks for large num of cells
+    ##ddata_y <- dendro_data(dd.col) ## this breaks for large number of cells
 
+                                            # Combine raw and normalised data into giant table
+    x.norm.ordered.log <- log2(x.norm+1)[col.ord, row.ord]
+    x.expr.ordered.log <- log2(x.expr+1)[col.ord, row.ord]
+    combined.table <- combineRawAndNormAndCondition(x.expr.ordered.log, x.norm.ordered.log)
 
-    xx <- log2(newmat+1)[col.ord, row.ord] ## this looks broken, but isnt
-    mdf <- meltMatrix(xx)
-
-    matEx <- selectGenes(matrix.expdata, mod.genes)
-    newmatEx <- t(matEx[,choose.cells])
-    xEx <- as.matrix(newmatEx)
-    xxEx <- log2(newmatEx+1)[col.ord, row.ord]
-    mdfEx <- meltMatrix(xxEx)
-
-                                            # Colour cell conditions and match dendro order
-    cells.ordered <- rownames(xx)
-    cells.df <- makeCellPlotData(cells.ordered)
-
-                                            # Calculate module gene expression
-    module.exp <- makeGExprPlotData(xx, cells.ordered, do.log2 = FALSE) # already log2
-
-                                            # Calculate top 3 gene expression
-    exp.g3.melt <- make3GenesData(newmatEx)
+                                            # Calculate module gene and top 3 expressions
+    module.exp <- makeGExprPlotData(combined.table)
+    exp.g3 <- make3GenesData(combined.table)
 
 
                                             # P L O T S #
 
-    theme_none <- theme(
-      ## Set up a blank theme
+    theme_none <- theme( ## Set up a blank theme
       panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
       panel.background = element_blank(),
-      #axis.title.x = element_text(colour=NA),
+      ##axis.title.x = element_text(colour=NA),
       axis.title.x = element_blank(), axis.title.y = element_blank(),
       axis.text.x = element_blank(), axis.text.y = element_blank(),
       axis.line = element_blank(), axis.ticks = element_blank(),
@@ -969,10 +986,11 @@ dev.off()
       plot.margin=unit(c(0,0,0,0), "mm")
     )
                                             # Heatmap
-    p.heatmap <- ggplot(mdf, aes(x=variable, y=cells)) +
-      geom_tile(aes(fill=value)) + scale_fill_gradient2() +
+    p.heatmap <- ggplot(combined.table, aes(x=variable, y=cells)) +
+      geom_tile(aes(fill=value.raw)) + scale_fill_gradient2() +
       theme(legend.position="none",
             axis.text.x = element_text(angle = 50, hjust=0.95),
+            ##panel.background = element_blank()
             axis.title.y = element_blank())
 
                                             # Dendrogram TOP/GENES
@@ -985,7 +1003,7 @@ dev.off()
     #  coord_flip() + theme_none
 
                                             # Cell Bar
-    p.cellbar <- ggplot(cells.df, aes(x=names, y=height, fill=color, width=0.6)) +
+    p.cellbar <- ggplot(combined.table, aes(x=cells, y=100, fill=condition, width=0.6)) +
       ## fiddle with width for clearer cell borders
       geom_bar(stat='identity') + coord_flip() +
       theme(axis.title.x = element_blank(),
@@ -1000,7 +1018,7 @@ dev.off()
 
 
                                             # Gene Module Expression
-    p.expr <- ggplot(module.exp, aes(x=names, y=rsums, width=0.6)) +
+    p.expr <- ggplot(module.exp, aes(x=cells, y=sum.raw, width=0.6)) +
       geom_bar(stat='identity', fill="grey") + coord_flip() +
       theme(axis.title.x = element_blank(),
             axis.text.x = element_blank(),
@@ -1012,12 +1030,12 @@ dev.off()
 
 
                                             # Top 3 Gene Expression in Module
-    p.top3 <- ggplot(exp.g3.melt, aes(x=Cell, y=value, width=0.6, fill=condition)) +
+    p.top3 <- ggplot(exp.g3, aes(x=cells, y=value.norm, width=0.6, fill=condition)) +
       geom_bar(stat='identity') + coord_flip()
 
     ## some issues here:
     ## - we cannot include the axis labels because it messes up the scaling.
-    p.t3.facet <- p.top3 + facet_wrap(~Gene, ncol=3) +
+    p.t3.facet <- p.top3 + facet_wrap(~variable, ncol=3) +
       theme(axis.title.x = element_blank(),
             ##axis.text.x = element_blank(),
             ##axis.line.x = element_line(colour = "black", size = 1, linetype = "solid"),
@@ -1069,3 +1087,4 @@ dev.off()
   #+end_src
 
   #+RESULTS:
+  : 1
