@@ -842,6 +842,8 @@ dev.off()
 
 * Split Out Parts
 
+  This is the script Adrian should use for future plots
+
   #+begin_src R :session no
     library(RaceID)
     library(grid)
