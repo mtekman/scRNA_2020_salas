@@ -843,12 +843,12 @@ dev.off()
 * Split Out Parts
 
   #+begin_src R :session no
-    #library(RaceID)
+    library(RaceID)
     library(grid)
     library(ggplot2)
     library(reshape2)
+    library(lemon)
     library(ggdendro)
-    #library(cowplot) ## plot_grid
     library(dplyr)
 
     selectGenes <- function(matr, genelist){
@@ -941,150 +941,168 @@ dev.off()
       return(x)
     }
 
+    runMain <- function(module.path, raceid.file, cells.top100=TRUE){
+      "Process data and produce plot test.svg"
                                             # Read Expression and Normalised Data
-    mod.genes <- read.table("~/repos/_work/_scrna/scRNA_2020_salas/files/4_wgcna/genes_7477/module_black.txt")$V1
-    ##matrix.norm <- readRDS("~/Downloads/sc_object_RaceID.RDS")@ndata
-    tmp <- readRDS("~/Downloads/ndata_expdata.rds")
-    matrix.norm <- tmp[[1]]
-    matrix.expr <- tmp[[2]]
+      mod.genes <- read.table(module.path)$V1
+      tmp <- readRDS(raceid.file)
+      ##tmp <- readRDS("~/Downloads/ndata_expdata.rds")
+      ##matrix.norm <- tmp[[1]]
+      ##matrix.expr <- tmp[[2]]
+      matrix.norm <- tmp@ndata
+      matrix.expr <- tmp@expdata
 
+      ## Start by picking cells from filtered (normalised) matrix
+      if (cells.top100){
+        choose.cells <- subselectCells(as.matrix(matrix.norm), 100, TRUE)
+      } else {
+        ## we use filtered cells since they are common between both sets
+        choose.cells <- colnames(as.matrix(matrix.norm))
+      }
 
-    ## Start by picking cells from a matrix
-    choose.cells <- subselectCells(matrix.expr, 100, TRUE)
+      x.norm <- filterMatrix(matrix.norm, mod.genes, choose.cells)
+      x.expr <- filterMatrix(matrix.expr, mod.genes, choose.cells)
 
-    x.norm <- filterMatrix(matrix.norm, mod.genes, choose.cells)
-    x.expr <- filterMatrix(matrix.expr, mod.genes, choose.cells)
-
+  
                                             # Calculate Dendrogram and get Cell and Gene Ordering
-    dd.col <- makeDendrogram(x.norm)
-    dd.row <- makeDendrogram(t(x.norm))
-    col.ord <- order.dendrogram(dd.col)
-    row.ord <- order.dendrogram(dd.row)
-    ddata_x <- dendro_data(dd.row)
-    ##ddata_y <- dendro_data(dd.col) ## this breaks for large number of cells
+      dd.col <- makeDendrogram(x.norm)
+      dd.row <- makeDendrogram(t(x.norm))
+      col.ord <- order.dendrogram(dd.col)
+      row.ord <- order.dendrogram(dd.row)
+      ddata_x <- dendro_data(dd.row)
+      ##ddata_y <- dendro_data(dd.col) ## this breaks for large number of cells
 
                                             # Combine raw and normalised data into giant table
-    x.norm.ordered.log <- log2(x.norm+1)[col.ord, row.ord]
-    x.expr.ordered.log <- log2(x.expr+1)[col.ord, row.ord]
-    combined.table <- combineRawAndNormAndCondition(x.expr.ordered.log, x.norm.ordered.log)
+      x.norm.ordered.log <- log2(x.norm+1)[col.ord, row.ord]
+      x.expr.ordered.log <- log2(x.expr+1)[col.ord, row.ord]
+      combined.table <- combineRawAndNormAndCondition(x.expr.ordered.log, x.norm.ordered.log)
 
                                             # Calculate module gene and top 3 expressions
-    module.exp <- makeGExprPlotData(combined.table)
-    exp.g3 <- make3GenesData(combined.table)
+      module.exp <- makeGExprPlotData(combined.table)
+      exp.g3 <- make3GenesData(combined.table)
 
 
                                             # P L O T S #
 
-    theme_none <- theme( ## Set up a blank theme
-      panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-      panel.background = element_blank(),
-      ##axis.title.x = element_text(colour=NA),
-      axis.title.x = element_blank(), axis.title.y = element_blank(),
-      axis.text.x = element_blank(), axis.text.y = element_blank(),
-      axis.line = element_blank(), axis.ticks = element_blank(),
-      ##axis.ticks.length = element_blank(),
-      plot.margin=unit(c(0,0,0,0), "mm")
-    )
+      ## THEMES ##
+      theme_none <- theme( ## Set up a blank theme
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        ##axis.title.x = element_text(colour=NA),
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.text.y = element_blank(),
+        axis.line = element_blank(), axis.ticks = element_blank(),
+        ##axis.ticks.length = element_blank(),
+        plot.margin=unit(c(0,0,0,0), "mm")
+      )
+
+      theme_vertical <- theme(
+        axis.title.y = element_blank(),
+        axis.title.x = element_blank(),
+        ##axis.text.x = element_blank(),
+        ##axis.text.y = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.ticks.y = element_blank(),
+        panel.background = element_blank(),
+        legend.position="none",
+        plot.margin=unit(c(0,0,0,0), "mm"))
+
+      ## ACTUAL PLOTS ##
                                             # Heatmap
-    p.heatmap <- ggplot(combined.table, aes(x=variable, y=cells)) +
-      geom_tile(aes(fill=value.raw)) + scale_fill_gradient2() +
-      theme(legend.position="none",
-            axis.text.x = element_text(angle = 50, hjust=0.95),
-            ##panel.background = element_blank()
-            axis.title.y = element_blank())
+      p.heatmap <- ggplot(combined.table, aes(x=variable, y=cells)) +
+        geom_tile(aes(fill=value.raw)) + scale_fill_gradient2() + theme(legend.position = "bottom")
+      ## first we extract the legend
+      leg.heatmap <- g_legend(p.heatmap)
+      ## then we apply the rest of theme
+      p.heatmap <- p.heatmap + theme(legend.position="none",
+                                     axis.text.x = element_text(angle = 50, hjust=0.95),
+                                     ##panel.background = element_blank()
+                                     axis.title.y = element_blank())
 
-                                            # Dendrogram TOP/GENES
-    p.topdendro <- ggplot(segment(ddata_x)) +
-      geom_segment(aes(x=x, y=y, xend=xend, yend=yend)) + theme_none
 
-                                            # Dendrogram RIGHT/CELLS
-    #p3 <- ggplot(segment(ddata_y)) +
-    #  geom_segment(aes(x=x, y=y, xend=xend, yend=yend)) +
-    #  coord_flip() + theme_none
+
+                                            # Dendrogram TOP/GENES and RIGHT/CELLS
+      p.topdendro <- ggplot(segment(ddata_x)) +
+        geom_segment(aes(x=x, y=y, xend=xend, yend=yend)) + theme_none
+                                            #p3 <- ggplot(segment(ddata_y)) +
+                                            #  geom_segment(aes(x=x, y=y, xend=xend, yend=yend)) +
+                                            #  coord_flip() + theme_none
 
                                             # Cell Bar
-    p.cellbar <- ggplot(combined.table, aes(x=cells, y=100, fill=condition, width=0.6)) +
-      ## fiddle with width for clearer cell borders
-      geom_bar(stat='identity') + coord_flip() +
-      theme(axis.title.x = element_blank(),
-            axis.text.x = element_blank(),
-            axis.ticks.x = element_blank(),
-            axis.ticks.y = element_blank(),
-            legend.position="none",
-            plot.margin=unit(c(0,0,0,0), "mm"),
-            panel.background = element_blank()) +
-      ## no grey space above or below
-      scale_y_continuous(expand = c(0, 0), limits = c(0, 100))
-
+      p.cellbar <- ggplot(combined.table, aes(x=cells, y=100, fill=condition, width=0.6)) +
+        ## fiddle with width for clearer cell borders
+        geom_bar(stat='identity') + coord_flip() +
+        theme_vertical + theme(axis.text.x = element_blank()) +
+        ## no grey space above or below
+        scale_y_continuous(expand = c(0, 0), limits = c(0, 100))
 
                                             # Gene Module Expression
-    p.expr <- ggplot(module.exp, aes(x=cells, y=sum.raw, width=0.6)) +
-      geom_bar(stat='identity', fill="grey") + coord_flip() +
-      theme(axis.title.x = element_blank(),
-            axis.text.x = element_blank(),
-            axis.title.y = element_blank(),
-            axis.ticks.x = element_blank(),
-            panel.background = element_blank(),
-            legend.position="none",
-            plot.margin=unit(c(0,0,0,0), "mm"))
+      p.expr <- ggplot(module.exp, aes(x=cells, y=sum.raw, width=0.6)) +
+        geom_bar(stat='identity', fill="grey") + coord_flip() + theme_vertical +
+        theme(axis.text.x = element_text(), axis.line.x = element_line())
 
+      ## no legend here to extract,
 
                                             # Top 3 Gene Expression in Module
-    p.top3 <- ggplot(exp.g3, aes(x=cells, y=value.norm, width=0.6, fill=condition)) +
-      geom_bar(stat='identity') + coord_flip()
+      p.top3 <- ggplot(exp.g3, aes(x=cells, y=value.norm, width=0.6, fill=condition)) +
+        geom_bar(stat='identity') + coord_flip()
 
-    ## some issues here:
-    ## - we cannot include the axis labels because it messes up the scaling.
-    p.t3.facet <- p.top3 + facet_wrap(~variable, ncol=3) +
-      theme(axis.title.x = element_blank(),
-            ##axis.text.x = element_blank(),
-            ##axis.line.x = element_line(colour = "black", size = 1, linetype = "solid"),
-            axis.ticks.y = element_blank(),
-            axis.title.y = element_blank(),
-            panel.background = element_blank(),
-            legend.position="none",
-            plot.margin=unit(c(0,0,0,0), "mm"))
+      ## some issues here:
+      ## - we cannot include the axis labels because it messes up the scaling.
+      p.t3.facet <- p.top3 + facet_wrap(~variable, ncol=3, strip.position = "top") + theme_vertical +
+        theme(axis.line.x = element_line(),
+              axis.ticks.x = element_line(),
+              axis.text.x = element_text(angle=50, hjust=0.95),
+              panel.margin.y = unit(1, "lines"))  ## spacing between facets (do NOT use panel.spacing)
+
+      ## the idea is to leave enough spaces to see the names (and thus check the ordering)
+      ## and then to just be able to crop out the redundant pieces in the final piece
+      ##
+      ## - THESE VALUES ONLY WORK ON A VIEWPORT WITH ASPECT RATIO: 1920x1200 (or 8:5), e.g 960x600
+      ##
+      width.heatmap = 0.6
+      height.cells = 0.75
+      width.cells = 0.07
+      width.sums = 0.08
+      start.left = 0
+      start.left.heatmap = 0.18
+      start.bottom = 0.09
+      horiz.space = 0.005
+      ##
+      svg("test.svg", 22,15)
+      grid.newpage()
+      print(p.cellbar, vp=viewport(width=width.cells, height=height.cells,
+                                   x = start.left,
+                                   y = start.bottom,
+                                   just=c(0,0) ))
+      print(p.expr, vp=viewport(width=width.sums, height=height.cells * 1.012,
+                                x = start.left + width.cells + horiz.space,
+                                y = start.bottom - 0.0096,
+                                just=c(0,0) ))
+      print(p.heatmap, vp=viewport(width=width.heatmap, height=height.cells * 1.1015,
+                                   x = start.left.heatmap + horiz.space - 0.0347,
+                                   y = start.bottom * 0.211,
+                                   just=c(0,0) ))
+      print(p.topdendro, vp=viewport(width=width.heatmap * 0.991, height=width.cells * 1.101,
+                                     x = start.left.heatmap + 0.02 + horiz.space - 0.0347,
+                                     y = 0.84,
+                                     just=c(0,0) ))
+      print(p.t3.facet, vp=viewport(0.23, height.cells * 1.055,
+                                    x = 0.75,
+                                    y = start.bottom - 0.025,
+                                    just=c(0,0) ))
+      leg.heatmap$vp = viewport(0.23, 0.5,
+                                x = 0.59,
+                                y = -0.23,
+                                just=c(0,0) )
+      grid.draw(leg.heatmap)
+      dev.off()
+    }
 
 
-
-    ## the idea is to leave enough spaces to see the names (and thus check the ordering)
-    ## and then to just be able to crop out the redundant pieces in the final piece
-    ##
-    ## - THESE VALUES ONLY WORK ON A VIEWPORT WITH ASPECT RATIO: 1920x1200 (or 8:5), e.g 960x600
-    ##
-    width.heatmap = 0.6
-    height.cells = 0.75
-    width.cells = 0.07
-    width.sums = 0.08
-    start.left = 0
-    start.left.heatmap = 0.18
-    start.bottom = 0.09
-    horiz.space = 0.005
-    ##
-    svg("test.svg", 22,15)
-    grid.newpage()
-    print(p.cellbar, vp=viewport(width=width.cells, height=height.cells,
-                          x = start.left,
-                          y = start.bottom,
-                          just=c(0,0) ))
-    print(p.expr, vp=viewport(width=width.sums, height=height.cells,
-                          x = start.left + width.cells + horiz.space,
-                          y = start.bottom,
-                          just=c(0,0) ))
-    print(p.heatmap, vp=viewport(width=width.heatmap, height=height.cells * 1.1015,
-                          x = start.left.heatmap + horiz.space - 0.0347,
-                          y = start.bottom * 0.211,
-                          just=c(0,0) ))
-    print(p.topdendro, vp=viewport(width=width.heatmap * 0.991, height=width.cells * 1.101,
-                          x = start.left.heatmap + 0.02 + horiz.space - 0.0347,
-                          y = 0.84,
-                          just=c(0,0) ))
-    print(p.t3.facet, vp=viewport(0.25, height.cells * 1.035,  ## wow this scaling is exact...
-                          x = 0.75,
-                          y = start.bottom - 0.01,
-                          just=c(0,0) ))
-    dev.off()
+    runMain("~/repos/_work/_scrna/scRNA_2020_salas/files/4_wgcna/genes_7477/module_black.txt",
+            "~/Downloads/sc_object_RaceID.RDS", cells.top100=T)
   #+end_src
 
   #+RESULTS:
-  : 1
+  : 2
