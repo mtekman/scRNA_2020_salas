@@ -81,16 +81,16 @@ matrix.norm <- readRDS("~/Downloads/sc_object_RaceID.RDS")@ndata
 Using ggplot's native heatmap function
 
  #+begin_src R :session yes :results value file :file ggplot.test.png
-library(reshape2)
-library(ggplot2)
+   library(reshape2)
+   library(ggplot2)
 
-matrix.norm <- readRDS("~/Downloads/sc_object_RaceID.RDS")@ndata
-mat = as.matrix(matrix.norm[mod.genes,])
-mat.melt = melt(mat)
-colnames(mat.melt) <- c("Gene", "Cell", "value")
-png("ggplot.test.png", width=400, height=750)
-ggplot(mat.melt, aes(Gene, Cell)) + geom_tile(aes(fill=value), colour = "white") + scale_fill_gradient(low="purple", high="green")
-dev.off()
+   matrix.norm <- readRDS("~/Downloads/sc_object_RaceID.RDS")@ndata
+   mat = as.matrix(matrix.norm[mod.genes,])
+   mat.melt = melt(mat)
+   colnames(mat.melt) <- c("Gene", "Cell", "value")
+   png("ggplot.test.png", width=400, height=750)
+   ggplot(mat.melt, aes(Gene, Cell)) + geom_tile(aes(fill=value), colour = "white") + scale_fill_gradient(low="purple", high="green")
+   dev.off()
 #+end_src
 
 #+RESULTS:
@@ -161,12 +161,12 @@ dev.off()
  Let's go back to the normalised matrix
 
  #+begin_src R :session yes :file heatmap2.scaled.png
-png("heatmap2.scaled.png")
-matrix.norm <- readRDS("~/Downloads/sc_object_RaceID.RDS")@ndata
-mat = as.matrix(matrix.norm[mod.genes,])
+   png("heatmap2.scaled.png")
+   matrix.norm <- readRDS("~/Downloads/sc_object_RaceID.RDS")@ndata
+   mat = as.matrix(matrix.norm[mod.genes,])
 
-res <- heatmap.2(log2(t(mat)+1), dendrogram="column", scale="none", srtCol = 50, labRow = NA, key.title = "log2(x+1)", key.ylab = NA, lwid = c(1,1,1), lmat = matrix(c(3,1,2,3,1,2,3,1,4), ncol=3), lhei= c(1,10,2), col=brewer.pal(9,"BuPu"))
-dev.off()
+   res <- heatmap.2(log2(t(mat)+1), dendrogram="column", scale="none", srtCol = 50, labRow = NA, key.title = "log2(x+1)", key.ylab = NA, lwid = c(1,1,1), lmat = matrix(c(3,1,2,3,1,2,3,1,4), ncol=3), lhei= c(1,10,2))
+   dev.off()
  #+end_src
 
  To add more to this would require really getting familiar with =image= which as far as I understand directly renders to a graphics object. We can add new graphics on top of this object by calling =image(..., add=T)= but we will have no guarantee that it will actually align.
